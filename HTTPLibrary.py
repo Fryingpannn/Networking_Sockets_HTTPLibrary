@@ -50,15 +50,13 @@ def prepareRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA):
 def receiveHTTPResponse(TCPSocket, VERBOSE):
     response = ''
 
-    while True:
-        data = TCPSocket.recv(1024)
-        if not data:
-            break
-        
-        response += data
+    # while True:
+    data = TCPSocket.recv(10240)
+        # if not data:
+            # break    
+    response += data.decode()
+    print(response)
 
     # Need to seperate the response body from resposne headers so
     # What to display if VERBOSE is on?
-
-    response = response.decode()
-    print(response)
+    # what if response is empty?

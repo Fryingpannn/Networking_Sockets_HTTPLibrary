@@ -1,8 +1,8 @@
 import HTTPLibrary
 
-HOST = "www.httpbin.org"
+HOST = "httpbin.org"
 HTTP_METHOD = "GET"
-PATH = ""
+PATH = "/status/418"
 QUERY_PARAMS = ""
 HEADERS = []
 BODY_DATA = None
