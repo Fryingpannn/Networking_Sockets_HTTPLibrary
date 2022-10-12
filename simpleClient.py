@@ -1,0 +1,11 @@
+import HTTPLibrary
+
+HOST = "www.httpbin.org"
+HTTP_METHOD = "GET"
+PATH = ""
+QUERY_PARAMS = ""
+HEADERS = []
+BODY_DATA = None
+VERBOSE = True
+
+HTTPLibrary.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)

@@ -10,10 +10,13 @@ HTTP METHOD
 HEADERS (an array of strings "k:v")
 '''
 
-PORT = 8080
+# -H "head: value" -H "head2: value2"
+# ["head: value", "head2: value2"]
 
-def sendHTTPRequest(HOST, HTTP_METHOD, PATH = "/", QUERY_PARAMS = "", HEADERS = None, BODY_DATA = None, VERBOSE = False):
-    
+PORT = 80
+
+def sendHTTPRequest(HOST, HTTP_METHOD, PATH = "/", QUERY_PARAMS = "", HEADERS = [], BODY_DATA = None, VERBOSE = False):
+    # does it socket close if receive is used in a different function?
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
         TCPSocket.connect((HOST, PORT))
 
@@ -29,9 +32,20 @@ def prepareRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA):
     request += HTTP_METHOD + " " + PATH + QUERY_PARAMS + " HTTP/1.1\r\n"
     request += "Host: " + HOST + "\r\n"
 
+    for HEADER in HEADERS:
+        request += HEADER + "\r\n"
 
-    # Convert it to binary
-    return request
+    if BODY_DATA is not None:
+        # For body data, need content length header: Double check it once
+
+        request += "Content-Length: " + len(BODY_DATA) + "\r\n"
+        request += "\r\n"
+        request += "{" + BODY_DATA + "}"
+        request += "\r\n"
+
+    request += "\r\n"
+    return request.encode()
+
 
 def receiveHTTPResponse(TCPSocket, VERBOSE):
     response = ''
@@ -45,4 +59,6 @@ def receiveHTTPResponse(TCPSocket, VERBOSE):
 
     # Need to seperate the response body from resposne headers so
     # What to display if VERBOSE is on?
-    response = response.decode('utf-8')
+
+    response = response.decode()
+    print(response)

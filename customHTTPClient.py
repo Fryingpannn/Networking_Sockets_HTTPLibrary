@@ -1,6 +1,6 @@
 import socket
 
-HOST = "www.httpbin.org"
+HOST = "httpbin.org"
 request = b'''GET /status/418 HTTP/1.1\r\nHost: httpbin.org\r\n\r\n'''
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
