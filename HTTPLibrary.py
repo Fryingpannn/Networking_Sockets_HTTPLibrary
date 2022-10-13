@@ -17,6 +17,7 @@ PORT = 80
 
 def sendHTTPRequest(HOST, HTTP_METHOD, PATH = "/", QUERY_PARAMS = "", HEADERS = [], BODY_DATA = None, VERBOSE = False):
     # does it socket close if receive is used in a different function?
+    # - Yes, closes at end of receiveHTTPResponse
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
         TCPSocket.connect((HOST, PORT))
 
