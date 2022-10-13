@@ -1,4 +1,6 @@
-import HTTPLibrary
+from HTTPLibrary import HTTPLibrary
+
+library = HTTPLibrary()
 
 def Example():
     HOST = "httpbin.org"
@@ -7,9 +9,9 @@ def Example():
     QUERY_PARAMS = ""
     HEADERS = []
     BODY_DATA = None
-    VERBOSE = False
+    VERBOSE = True
 
-    HTTPLibrary.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
 
 def Get_With_Query_Params():
     HOST = "httpbin.org"
@@ -18,9 +20,9 @@ def Get_With_Query_Params():
     QUERY_PARAMS = ""
     HEADERS = []
     BODY_DATA = None
-    VERBOSE = False
+    VERBOSE = True
 
-    HTTPLibrary.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
 
 def Post_With_Inline_Data():
     HOST = "httpbin.org"
@@ -29,9 +31,9 @@ def Post_With_Inline_Data():
     QUERY_PARAMS = ""
     HEADERS = ["Content-Type:application/json"]
     BODY_DATA = '{"Assignment": 1}'
-    VERBOSE = False
+    VERBOSE = True
 
-    HTTPLibrary.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
 
 
 Example()
