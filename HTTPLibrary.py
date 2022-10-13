@@ -1,32 +1,48 @@
 import socket
 
 '''
-HOST
-PATH
-QUERY_PARAMS
-VERBOSE
-BODY_DATA - To need to look how to send the body data
-HTTP METHOD
-HEADERS (an array of strings "k:v")
+Description: Send a HTTP request via a TCP socket
+
+Method Parameters
+    HOST: The host to send the request to. Should not include the protocol, only the domain names
+    HTTP METHOD
+    PATH: String
+    QUERY_PARAMS: String
+    VERBOSE: Boolean
+    BODY_DATA
+    HEADERS: An array of strings formatted as 'k:v'. Example: ['"Content-Length": "17"', '"User-Agent": "Concordia-HTTP/1.0"']
 '''
-
-# -H "head: value" -H "head2: value2"
-# ["head: value", "head2: value2"]
-
-PORT = 80
-
 def sendHTTPRequest(HOST, HTTP_METHOD, PATH = "/", QUERY_PARAMS = "", HEADERS = [], BODY_DATA = None, VERBOSE = False):
-    # does it socket close if receive is used in a different function?
-    # - Yes, closes at end of receiveHTTPResponse
+    PORT = 80
+    # What is path is ""?
+    # Merge query parameters and path?
+    # input data other than json?
+    # what if response is empty?
+    
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
+        
         TCPSocket.connect((HOST, PORT))
 
         request = prepareRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA)    
         TCPSocket.sendall(request)
+        responseHeader, responseBody = receiveResponse(TCPSocket)
 
-        receiveHTTPResponse(TCPSocket, VERBOSE)
+        if VERBOSE:
+            print(responseHeader)
+        
+        print(responseBody)        
 
+'''
+    Internal Method
+    Description: Prepares the HTTP request data to sent from the socket
+    Returns: String containing the requestHeader and requestBody encoded into bytes
 
+    Note: 
+            - Each line must be seperated by the '\r\n' delimiter
+            - Body must be seperated by an extra '\r\n' delimiter
+            - Body requires the Content-length Header
+            - The request must end with an extra '\r\n' delimiter
+'''
 def prepareRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA):
     request = ''
     
@@ -37,27 +53,33 @@ def prepareRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA):
         request += HEADER + "\r\n"
 
     if BODY_DATA is not None:
-        # For body data, need content length header: Double check it once
-
-        request += "Content-Length: " + len(BODY_DATA) + "\r\n"
+        request += "Content-Length: " + str(len(BODY_DATA)) + "\r\n"
         request += "\r\n"
-        request += "{" + BODY_DATA + "}"
-        request += "\r\n"
+        request += BODY_DATA + "\r\n"
 
     request += "\r\n"
     return request.encode()
 
 
-def receiveHTTPResponse(TCPSocket, VERBOSE):
-    response = ''
 
-    # while True:
-    data = TCPSocket.recv(10240)
-        # if not data:
-            # break    
-    response += data.decode()
-    print(response)
+'''
+    Internal Method 
+    Description: Receives the response from the socket
+    Return: responseHeader, responseBody
 
-    # Need to seperate the response body from resposne headers so
-    # What to display if VERBOSE is on?
-    # what if response is empty?
+    Note: Splits the Header and Body using the '\r\n\r\n' delimiter
+'''
+def receiveResponse(socket):
+    BUFFER_SIZE = 1024
+    response = b''
+
+    while True:
+        data = socket.recv(BUFFER_SIZE)
+        response += data
+        if len(data) < BUFFER_SIZE: break
+    
+    response = response.decode('utf-8')
+    responseHeader, responseBody = response.split('\r\n\r\n', 1)
+
+    return responseHeader, responseBody
+    

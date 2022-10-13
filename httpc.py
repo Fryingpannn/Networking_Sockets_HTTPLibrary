@@ -38,7 +38,7 @@ or from an interactive prompt.
 - main() takes in as input the user's input
 '''
 def main():
-    print("[Starting Pan & Smit's HTTP program!]")
+    print("[Starting Smit's & Pan HTTP program!]")
 
 if __name__ == "__main__":
     main()
