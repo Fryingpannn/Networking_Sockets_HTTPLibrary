@@ -17,6 +17,7 @@ Make Python in excecutable
 https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
 '''
 from collections import defaultdict
+import sys
 
 class HTTPC:
     # Constructor: 'self' refers to this current class: default parameter for all class functions.
