@@ -61,8 +61,7 @@ class HTTPC:
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
         self.__validate_data()
-        if self.get_verbose():
-            print('[User input data]: ', self.__parsed_args, '\n')
+        #print('[User input data]: ', self.__parsed_args, '\n')
     
     # Validates input header should contain 1 occurence of ':'
     def __validate_header(self, header):
