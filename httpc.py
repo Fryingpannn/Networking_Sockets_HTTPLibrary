@@ -110,6 +110,8 @@ class HTTPC:
         return self.__parsed_args.verbose
     def get_headers(self): # -> [str]
         return self.__parsed_args.headers
+    def get_inline_data(self): # -> str
+        return self.__parsed_args.data
     def get_data(self): # -> str
         return self.__data
     def get_file_path(self): # -> str
