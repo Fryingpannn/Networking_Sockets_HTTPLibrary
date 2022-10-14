@@ -20,10 +20,9 @@ class HTTPLibrary:
         HEADERS: An array of strings formatted as 'k:v'. Example: ['Content-Length: 17', 'User-Agent: Concordia-HTTP/1.0']
     '''
     def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
-        # Server Port?
-        # Handle path on server side?
-        # what if response is empty?
         # re-directional url parse to domain?
+        if PATH == "":
+            PATH = "/"
         
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
             
@@ -101,7 +100,10 @@ class HTTPLibrary:
             if len(data) < BUFFER_SIZE: break
         
         response = response.decode('utf-8')
+
+        # Add check if responseBody does not exists
         responseHeader, responseBody = response.split('\r\n\r\n', 1)
+
 
         return responseHeader, responseBody
 
