@@ -3,9 +3,6 @@ import socket
 
 
 class HTTPLibrary:
-
-    def __init__(self):
-        self.PORT = 80
         
     '''
     Description: Send a HTTP request via a TCP socket
@@ -24,9 +21,16 @@ class HTTPLibrary:
             if PATH == "":
                 PATH = "/"
             
+            # Contains PORT number
+            if HOST.count(":") == 1:
+                HOST, PORT = HOST.split(":")
+                PORT = int(PORT)
+            else:
+                PORT = 80
+
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
                 
-                TCPSocket.connect((HOST, self.PORT))
+                TCPSocket.connect((HOST, PORT))
 
                 request = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
                 TCPSocket.sendall(request)
@@ -93,18 +97,21 @@ class HTTPLibrary:
         BUFFER_SIZE = 1024
         response = b''
 
+        # Reads data in packets of length BUFFER_SIZE from the kernel buffer
         while True:
-            data = socket.recv(BUFFER_SIZE)
-            response += data
-            if len(data) < BUFFER_SIZE: break
+            packet = socket.recv(BUFFER_SIZE)
+            response += packet
+            if len(packet) < BUFFER_SIZE: break   # Last packet
         
         response = response.decode('utf-8')
 
-        # Add check if responseBody does not exists
-        responseHeader, responseBody = response.split('\r\n\r\n', 1)
-
-
-        return responseHeader, responseBody
+        # If responseBody does not exists
+        if response.count('\r\n\r\n') < 1:
+            return response, ""
+        
+        else:
+            responseHeader, responseBody = response.split('\r\n\r\n', 1)
+            return responseHeader, responseBody
 
 
     def __responseHeaderContainsRedirection(self, responseHeaderString):

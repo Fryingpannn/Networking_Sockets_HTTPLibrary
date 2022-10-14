@@ -3,6 +3,10 @@
 2. In terminal, run `python httpc.py (get|post) [-v] (-h "k:v")* [-d inline-data] [-f file] URL`
 - E.g.: `python3 httpc.py get https://httpbin.org`
 
+## Notes
+- The input and output file paths should be absolute
+- Inline data should not have spaces
+
 #### Output to file
 `python httpc.py GET https://httpbin.org/status/418 -v -o Extra\teapot.txt` 
 
