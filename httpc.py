@@ -110,8 +110,8 @@ class HTTPC:
         return self.__parsed_args.verbose
     def get_headers(self): # -> [str]
         return self.__parsed_args.headers
-    def get_inline_data(self): # -> str
-        return self.__parsed_args.data
+    def get_data(self): # -> str
+        return self.__data
     def get_file_path(self): # -> str
         return self.__parsed_args.file
     def get_url(self): # -> str
@@ -138,7 +138,7 @@ def main():
     # Use our HTTP library to send request
     request = HTTPLibrary()
     request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
-                            httpc.get_inline_data(),httpc.get_verbose(),httpc.get_output_path())
+                            httpc.get_data(),httpc.get_verbose(),httpc.get_output_path())
 
     print('\n=====[END]=====\n')
 
