@@ -11,43 +11,47 @@ Specifics
   (E.g.: GET shouldn't take 'd').
 
 HTTP library receives parameters:
-- (HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS: str "k:v" , BODY_DATA, VERBOSE)
-
-Make Python in excecutable
-https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
+- (HOST, HTTP_METHOD, PATH, HEADERS: str "k:v" , BODY_DATA, VERBOSE)
 '''
-from collections import defaultdict
-import sys
+import argparse
 
 class HTTPC:
-    # Constructor: 'self' refers to this current class: default parameter for all class functions.
-    # Class member variables are defined here.
     def __init__(self):
-        # Hashmap containing params needed to send to HTTP library
-        self.params = defaultdict(None)
+        # Contains params needed to send to HTTP library
+        self.parsed_args = None
     
-    # Parses user input into hashmap
-    def parse(self, input):
-        pass
+    # Parses and stores user inputs from CLI
+    # Ref: httpc (get|post) [-v] (-h "k:v")* [-d inline-data] [-f file] URL
+    def store_inputs(self):
+        # Get input parameters using argparse library
+        parser = argparse.ArgumentParser()
+        # When storing arguments, can use parameters to perform extra parsing
+        parser.add_argument('method', type=str.upper, help='HTTP Method to use.', 
+                                 choices=['GET', 'POST'])
+        parser.add_argument('-v', '--verbose', help='Displays more \
+                                 information.', required=False, action='store_true')
+        # parser.add_argument('-h', help='Add headers in format headerName:valueName.',
+        #                    required=False, action='append')
+
+        # All arguments will be stored here
+        self.parsed_args = parser.parse_args()
+        print('Test: ', self.parsed_args)
 
 
 '''
 - A module’s __name__ is set equal to '__main__' when read from standard input, a script,
 or from an interactive prompt. 
 - This is the program's starting point.
-- main() takes in as input the user's input
 '''
 def main():
-    print("[Starting Pan & Smit's HTTP program!]")
-    # sys.argv holds the inputs passed by user from CLI
-    # these inputs are separated by the spaces in-between them.
-    # sys.argv[0] will always be the file name (httpc.exe)
-    if len(sys.argv) <= 1:
-        print('Please specify input parameters for httpc.')
+    print("\n=====[Starting Pan & Smit's HTTP program!]=====\n")
 
-    # create parser class
+    # Create parser class
     httpc = HTTPC()
-    
+    # Store user CLI inputs
+    httpc.store_inputs()
 
+    print('\n=====[END]=====\n')
+    
 if __name__ == "__main__":
     main()
