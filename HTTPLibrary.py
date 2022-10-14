@@ -17,7 +17,7 @@ class HTTPLibrary:
         QUERY_PARAMS: String
         VERBOSE: Boolean
         BODY_DATA
-        HEADERS: An array of strings formatted as 'k:v'. Example: ['"Content-Length": "17"', '"User-Agent": "Concordia-HTTP/1.0"']
+        HEADERS: An array of strings formatted as 'k:v'. Example: ['Content-Length: 17', 'User-Agent: Concordia-HTTP/1.0']
     '''
     def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", QUERY_PARAMS = "", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
         # What is path is ""?

@@ -36,6 +36,6 @@ def Post_With_Inline_Data():
     library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
 
 
-Example()
-Get_With_Query_Params()
+# Example()
+# Get_With_Query_Params()
 Post_With_Inline_Data()
