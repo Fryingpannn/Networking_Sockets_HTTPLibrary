@@ -11,7 +11,7 @@ def Example():
     BODY_DATA = None
     VERBOSE = True
 
-    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE)
 
 def Get_With_Query_Params():
     HOST = "httpbin.org"
@@ -22,7 +22,7 @@ def Get_With_Query_Params():
     BODY_DATA = None
     VERBOSE = True
 
-    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE)
 
 def Post_With_Inline_Data():
     HOST = "httpbin.org"
@@ -33,9 +33,9 @@ def Post_With_Inline_Data():
     BODY_DATA = '{"Assignment": 1}'
     VERBOSE = True
 
-    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE)
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE)
 
 
-# Example()
-# Get_With_Query_Params()
+Example()
+Get_With_Query_Params()
 Post_With_Inline_Data()

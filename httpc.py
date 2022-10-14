@@ -38,7 +38,16 @@ or from an interactive prompt.
 - main() takes in as input the user's input
 '''
 def main():
-    print("[Starting Smit's & Pan HTTP program!]")
+    print("[Starting Pan & Smit's HTTP program!]")
+    # sys.argv holds the inputs passed by user from CLI
+    # these inputs are separated by the spaces in-between them.
+    # sys.argv[0] will always be the file name (httpc.exe)
+    if len(sys.argv) <= 1:
+        print('Please specify input parameters for httpc.')
+
+    # create parser class
+    httpc = HTTPC()
+    
 
 if __name__ == "__main__":
     main()

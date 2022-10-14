@@ -19,7 +19,7 @@ class HTTPLibrary:
         BODY_DATA
         HEADERS: An array of strings formatted as 'k:v'. Example: ['Content-Length: 17', 'User-Agent: Concordia-HTTP/1.0']
     '''
-    def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", QUERY_PARAMS = "", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
+    def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
         # What is path is ""?
         # Merge query parameters and path?
         # input data other than json?
@@ -30,7 +30,7 @@ class HTTPLibrary:
             
             TCPSocket.connect((HOST, self.PORT))
 
-            request = self.__prepareRequest(HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA)    
+            request = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
             TCPSocket.sendall(request)
             responseHeader, responseBody = self.__receiveResponse(TCPSocket)
 
@@ -41,7 +41,7 @@ class HTTPLibrary:
                     print("Received 302 response code but didn't find the redirection URL")
                     return 
 
-                self.sendHTTPRequestself(redirectionDomain, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA, VERBOSE, OUTPUT_FILE)
+                self.sendHTTPRequestself(redirectionDomain, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE, OUTPUT_FILE)
 
             else:
                 if OUTPUT_FILE is not None:
@@ -67,10 +67,10 @@ class HTTPLibrary:
                 - Body requires the Content-length Header
                 - The request must end with an extra '\r\n' delimiter
     '''
-    def __prepareRequest(self, HOST, HTTP_METHOD, PATH, QUERY_PARAMS, HEADERS, BODY_DATA):
+    def __prepareRequest(self, HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA):
         request = ''
         
-        request += HTTP_METHOD + " " + PATH + QUERY_PARAMS + " HTTP/1.1\r\n"
+        request += HTTP_METHOD + " " + PATH + " HTTP/1.1\r\n"
         request += "Host: " + HOST + "\r\n"
 
         for HEADER in HEADERS:
