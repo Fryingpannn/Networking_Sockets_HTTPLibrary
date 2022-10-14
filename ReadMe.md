@@ -6,12 +6,23 @@
 ## Notes
 - The input and output file paths should be absolute
 - Inline data should not have spaces
+- If you're using Windows OS, file paths should use back-slashes ('\'), else paths should be forward-slashes ('/').
+
+## TODO
+- Need parse status and response code for response (Grading policy)
+- Compile program to EXE then test again
+
+### Test cases
+- Need body data (inline and file) with GET (Error)
+- Maybe other errors
 
 #### Output to file
-`python httpc.py GET https://httpbin.org/status/418 -v -o Extra\teapot.txt` 
+- Windows: `python httpc.py GET https://httpbin.org/status/418 -v -o Extra\teapot.txt` 
+- Mac: ``python3 httpc.py GET https://httpbin.org/status/418 -v -o Extra/teapot.txt`
 
 #### Body data from file
-`python httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra\data.json -v`
+- Windows: `python httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra\data.json -v`
+- Mac: `python httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra/data.json -v`
 
 #### Inline data
 `python httpc.py post https://httpbin.org/post -h Content-Type:application/json -d '{"Assignment":1}' -v`

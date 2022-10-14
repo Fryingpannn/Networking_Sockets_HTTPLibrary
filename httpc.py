@@ -63,7 +63,7 @@ class HTTPC:
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
         self.__validate_data()
-        #print('[User input data]: ', self.__parsed_args, '\n')
+        print('[User input data]: ', self.__parsed_args, '\n')
     
     # Validates input header should contain 1 occurence of ':'
     def __validate_header(self, header):
@@ -101,7 +101,16 @@ class HTTPC:
     
     # Read data from file to send as data
     def __read_file_data(self, path):
-        pass
+        txt_data = ''
+        print(path)
+        with open(path, 'r') as reader:
+            # Read entire file
+            txt_data = reader.read(-1)
+        
+        if not txt_data:
+            raise self.__parser.error('There was an error reading from the provided path or the file\
+                                      was empty. Are you sure you input the correct absolute path?')
+        return txt_data
     
     # Getters (-> return type)
     def get_method(self): # -> HTTPMethod
@@ -139,6 +148,7 @@ def main():
     httpc.store_inputs()
     # Use our HTTP library to send request
     request = HTTPLibrary()
+    print(httpc.get_hostname())
     request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
                             httpc.get_data(),httpc.get_verbose(),httpc.get_output_path())
 
