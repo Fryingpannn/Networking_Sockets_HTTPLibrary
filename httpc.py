@@ -23,7 +23,6 @@ REQUEST REFERENCE
 import argparse
 from enum import Enum
 from urllib.parse import urlparse
-from urllib.parse import parse_qs
 from HTTPLibrary import HTTPLibrary
 
 # Enum for HTTP methods
@@ -48,19 +47,22 @@ class HTTPC:
         self.__parser.add_argument('-help', action='help', help='Show this help message and exit')
         self.__parser.add_argument('method', type=str.upper, help='HTTP Method to use.', 
                             choices=[method.name for method in HTTPMethod])
-        self.__parser.add_argument('-v', '--verbose', help='Display more information.',
+        self.__parser.add_argument('-v', dest='verbose', help='Verbose mode. Display more information for a given request.',
                             default=False, action='store_true')
-        self.__parser.add_argument('-h', '-H', dest='headers', help='Add headers in format headerName:valueName one at a time.',
+        self.__parser.add_argument('-h', dest='headers', help='Add headers in format headerName:valueName one at a time.',
                             action='append', type=self.__validate_header, default=[])
-        self.__parser.add_argument('-d', dest='data', help='Add inline data to your request. Only for "POST" method.')
-        self.__parser.add_argument('-f', dest='file', help='Add file path to read data from. Only for "POST" method.')
-        self.__parser.add_argument('url', help='Add URL of the target HTTP server (can include query parameters).\
-                                          Use single quotes if your URL contains ampersands (&).',type=self.__validate_URL)
+        self.__parser.add_argument('-d', dest='data', help='Add inline data to your request. Only for "POST" method.\
+                            Cannot be used with "-f".')
+        self.__parser.add_argument('-f', dest='file', help='Add file path to read data from. Only for "POST" method.\
+                            Cannot be used with "-d".')
+        self.__parser.add_argument('url', help='Add URL of the target HTTP server. Enclose with single quotes if your URL\
+                            contains ampersands (&).',type=self.__validate_URL)
 
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
         self.__validate_data()
-        print('Test: ', self.__parsed_args)
+        if self.get_verbose():
+            print('[User input data]: ', self.__parsed_args, '\n')
     
     # Validates input header should contain 1 occurence of ':'
     def __validate_header(self, header):
@@ -74,8 +76,10 @@ class HTTPC:
         result = urlparse(url)
         if all([result.scheme, result.netloc, result.hostname]):
             # Set the hostname and full url path
-            self.__hostname = result.hostname
-            self.__full_path = str(result.path + '?' + result.query if result.query else result.path)
+            self.__hostname = result.netloc
+            self.__full_path = result.path
+            if result.params: self.__full_path += f';{result.params}'
+            if result.query: self.__full_path += f'?{result.query}'
             return url
         else:
             raise argparse.ArgumentTypeError('Please enter a valid URL.')
