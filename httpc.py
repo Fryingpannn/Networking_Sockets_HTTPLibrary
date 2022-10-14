@@ -38,6 +38,7 @@ class HTTPC:
         self.__hostname = ''
         # The full path AFTER hostname (path + query params)
         self.__full_path = ''
+        self.__data = ''
     
     # Parses and stores user inputs from CLI
     def store_inputs(self):
@@ -62,12 +63,12 @@ class HTTPC:
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
         self.__validate_data()
-        print('[User input data]: ', self.__parsed_args, '\n')
+        #print('[User input data]: ', self.__parsed_args, '\n')
     
     # Validates input header should contain 1 occurence of ':'
     def __validate_header(self, header):
         header_format = header.split(':')
-        if len(header_format) != 2:
+        if len(header_format) < 2:
             raise argparse.ArgumentTypeError('Please input header in the format headerName:valueName.')
         return header
     
@@ -90,10 +91,17 @@ class HTTPC:
             raise self.__parser.error('You may use "-d" or "-f" only with the POST method.')
         elif self.get_method() == HTTPMethod.POST.name:
             # If both file and inline data are present, raise error.
-            inline_or_file = [data for data in [self.get_inline_data(),self.get_file_path()] if data]
-            if len(inline_or_file) > 1:
+            if self.get_inline_data() and self.get_file_path():
                 raise self.__parser.error('You may only use one of either "-d" or "-f", but not both.')
+            elif self.get_inline_data():
+                self.__data = self.get_inline_data()
+            else:
+                self.__data = self.read_file_data(self.get_file_path())
         return True
+    
+    # Read data from file to send as data
+    def __read_file_data(self, path):
+        pass
     
     # Getters (-> return type)
     def get_method(self): # -> HTTPMethod
@@ -130,7 +138,7 @@ def main():
     # Use our HTTP library to send request
     request = HTTPLibrary()
     request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
-                            httpc.get_inline_data(),httpc.get_verbose(),httpc.get_file_path(),httpc.get_output_path())
+                            httpc.get_inline_data(),httpc.get_verbose(),httpc.get_output_path())
 
     print('\n=====[END]=====\n')
 
