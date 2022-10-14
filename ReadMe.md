@@ -3,8 +3,15 @@
 2. In terminal, run `python httpc.py (get|post) [-v] (-h "k:v")* [-d inline-data] [-f file] URL`
 - E.g.: `python3 httpc.py get https://httpbin.org`
 
-- python httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra\data.json -v
+#### Output to file
+`python httpc.py GET https://httpbin.org/status/418 -v -o Extra\teapot.txt` 
 
-- python httpc.py post https://httpbin.org/post -h Content-Type:application/json -d '{"Assignment": 1}' -v
+#### Body data from file
+`python httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra\data.json -v`
 
+#### Inline data
+`python httpc.py post https://httpbin.org/post -h Content-Type:application/json -d '{"Assignment":1}' -v`
+
+#### Multiple Headers
+`python httpc.py post https://httpbin.org/post -h "Content-Type:application/json" -h "Connection: keep-alive" -h "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0)" -d '{"Assignment":1}'` 
 
