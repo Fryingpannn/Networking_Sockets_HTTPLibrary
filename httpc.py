@@ -23,6 +23,7 @@ REQUEST REFERENCE
 import argparse
 from enum import Enum
 from urllib.parse import urlparse
+from urllib.parse import parse_qs
 from HTTPLibrary import HTTPLibrary
 
 class HTTPMethod(Enum):
@@ -34,6 +35,9 @@ class HTTPC:
         # Contains params needed to send to HTTP library
         self.__parsed_args = None
         self.__parser = None
+        self.__hostname = ''
+        # The full path AFTER hostname (path + query params)
+        self.__full_path = ''
     
     # Parses and stores user inputs from CLI
     def store_inputs(self):
@@ -49,8 +53,8 @@ class HTTPC:
                             action='append', type=self.__validate_header)
         self.__parser.add_argument('-d', dest='data', help='Add inline data to your request. Only for "POST" method.')
         self.__parser.add_argument('-f', dest='file', help='Add file path to read data from. Only for "POST" method.')
-        self.__parser.add_argument('url', help='Add URL of the target HTTP server (can include query parameters).',
-                            type=self.__validate_URL)
+        self.__parser.add_argument('url', help='Add URL of the target HTTP server (can include query parameters).\
+                                          Use single quotes if your URL contains ampersands (&).',type=self.__validate_URL)
 
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
@@ -67,7 +71,10 @@ class HTTPC:
     # Validates URL in simple manner (checks if has http:// or https:// + a hostname)
     def __validate_URL(self, url):
         result = urlparse(url)
-        if all([result.scheme, result.netloc]):
+        if all([result.scheme, result.netloc, result.hostname]):
+            # Set the hostname and full url path
+            self.__hostname = result.hostname
+            self.__full_path = str(result.path + '?' + result.query if result.query else result.path)
             return url
         else:
             raise argparse.ArgumentTypeError('Please enter a valid URL.')
@@ -96,6 +103,10 @@ class HTTPC:
         return self.__parsed_args.file
     def get_url(self): # -> str
         return self.__parsed_args.url
+    def get_hostname(self): # -> str
+        return self.__hostname
+    def get_url_path(self): # -> str
+        return self.__full_path
     
 '''
 - A module’s __name__ is set equal to '__main__' when read from standard input, a script,
@@ -111,9 +122,10 @@ def main():
     httpc.store_inputs()
     # Use our HTTP library to send request
     request = HTTPLibrary()
-    # request.sendHTTPRequest()
+    # request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
+    #                        httpc.get_inline_data(),httpc.get_verbose(),httpc.get_file_path())
 
     print('\n=====[END]=====\n')
-    
+
 if __name__ == "__main__":
     main()
