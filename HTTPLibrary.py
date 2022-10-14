@@ -20,9 +20,8 @@ class HTTPLibrary:
         HEADERS: An array of strings formatted as 'k:v'. Example: ['Content-Length: 17', 'User-Agent: Concordia-HTTP/1.0']
     '''
     def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
-        # What is path is ""?
-        # Merge query parameters and path?
-        # input data other than json?
+        # Server Port?
+        # Handle path on server side?
         # what if response is empty?
         # re-directional url parse to domain?
         
