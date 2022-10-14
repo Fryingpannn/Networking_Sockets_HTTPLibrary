@@ -20,39 +20,38 @@ class HTTPLibrary:
         HEADERS: An array of strings formatted as 'k:v'. Example: ['Content-Length: 17', 'User-Agent: Concordia-HTTP/1.0']
     '''
     def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
-        # re-directional url parse to domain?
-        if PATH == "":
-            PATH = "/"
-        
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
+            # re-directional url parse to domain?
+            if PATH == "":
+                PATH = "/"
             
-            TCPSocket.connect((HOST, self.PORT))
-
-            request = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
-            TCPSocket.sendall(request)
-            responseHeader, responseBody = self.__receiveResponse(TCPSocket)
-
-            if (self.__responseHeaderContainsRedirection(responseHeader)):
-                redirectionDomain = self.__findRedirectionDomain(responseHeader)
-
-                if redirectionDomain == "":
-                    print("Received 302 response code but didn't find the redirection URL")
-                    return 
-
-                self.sendHTTPRequestself(redirectionDomain, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE, OUTPUT_FILE)
-
-            else:
-                if OUTPUT_FILE is not None:
-                    file = open(OUTPUT_FILE, "w")
-                    file.write(responseBody)
-                    file.close()
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
                 
-                if VERBOSE:
-                    print(responseHeader)
-                
-                if OUTPUT_FILE is None:
-                    print(responseBody)        
+                TCPSocket.connect((HOST, self.PORT))
 
+                request = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
+                TCPSocket.sendall(request)
+                responseHeader, responseBody = self.__receiveResponse(TCPSocket)
+
+                if (self.__responseHeaderContainsRedirection(responseHeader)):
+                    redirectionDomain = self.__findRedirectionDomain(responseHeader)
+
+                    if redirectionDomain == "":
+                        print("Received 302 response code but didn't find the redirection URL")
+                        return 
+
+                    self.sendHTTPRequestself(redirectionDomain, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE, OUTPUT_FILE)
+
+                else:
+                    if OUTPUT_FILE is not None:
+                        file = open(OUTPUT_FILE, "w")
+                        file.write(responseBody)
+                        file.close()
+                    
+                    if VERBOSE:
+                        print(responseHeader)
+                    
+                    if OUTPUT_FILE is None:
+                        print(responseBody)
 
     '''
         Internal Method

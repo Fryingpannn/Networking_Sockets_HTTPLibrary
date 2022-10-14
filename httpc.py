@@ -57,6 +57,7 @@ class HTTPC:
                             Cannot be used with "-d".')
         self.__parser.add_argument('url', help='Add URL of the target HTTP server. Enclose with single quotes if your URL\
                             contains ampersands (&).',type=self.__validate_URL)
+        self.__parser.add_argument('-o', dest='output', help='Add path to a file to write the response to (must be writable).')
 
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
@@ -111,6 +112,8 @@ class HTTPC:
         return self.__hostname
     def get_url_path(self): # -> str
         return self.__full_path
+    def get_output_path(self): # -> str
+        return self.__parsed_args.output
     
 '''
 - A module’s __name__ is set equal to '__main__' when read from standard input, a script,
@@ -126,10 +129,8 @@ def main():
     httpc.store_inputs()
     # Use our HTTP library to send request
     request = HTTPLibrary()
-    print(httpc.get_hostname())
-    print(httpc.get_url_path())
     request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
-                            httpc.get_inline_data(),httpc.get_verbose(),httpc.get_file_path())
+                            httpc.get_inline_data(),httpc.get_verbose(),httpc.get_file_path(),httpc.get_output_path())
 
     print('\n=====[END]=====\n')
 
