@@ -26,6 +26,7 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from HTTPLibrary import HTTPLibrary
 
+# Enum for HTTP methods
 class HTTPMethod(Enum):
     GET = 'GET'
     POST = 'POST'
@@ -50,7 +51,7 @@ class HTTPC:
         self.__parser.add_argument('-v', '--verbose', help='Display more information.',
                             default=False, action='store_true')
         self.__parser.add_argument('-h', '-H', dest='headers', help='Add headers in format headerName:valueName one at a time.',
-                            action='append', type=self.__validate_header)
+                            action='append', type=self.__validate_header, default=[])
         self.__parser.add_argument('-d', dest='data', help='Add inline data to your request. Only for "POST" method.')
         self.__parser.add_argument('-f', dest='file', help='Add file path to read data from. Only for "POST" method.')
         self.__parser.add_argument('url', help='Add URL of the target HTTP server (can include query parameters).\
@@ -122,8 +123,8 @@ def main():
     httpc.store_inputs()
     # Use our HTTP library to send request
     request = HTTPLibrary()
-    # request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
-    #                        httpc.get_inline_data(),httpc.get_verbose(),httpc.get_file_path())
+    request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
+                            httpc.get_inline_data(),httpc.get_verbose(),httpc.get_file_path())
 
     print('\n=====[END]=====\n')
 
