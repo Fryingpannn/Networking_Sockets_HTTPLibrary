@@ -96,7 +96,7 @@ class HTTPC:
             elif self.get_inline_data():
                 self.__data = self.get_inline_data()
             else:
-                self.__data = self.read_file_data(self.get_file_path())
+                self.__data = self.__read_file_data(self.get_file_path())
         return True
     
     # Read data from file to send as data
