@@ -20,10 +20,10 @@
 ### Working ones
 
 #### Help display (-help)
-`python3 httpc.py -help`
+- `python3 httpc.py -help`
 
-#### GET from httpbin w/ verbose (-v)
-`python3 httpc.py GET https://httpbin.org/status/418 -v`
+#### GET from httpbin.org w/ verbose (-v)
+- `python3 httpc.py GET https://httpbin.org/status/418 -v`
 
 #### Output to file
 - Windows: `python httpc.py GET https://httpbin.org/status/418 -v -o Extra\teapot.txt` 
