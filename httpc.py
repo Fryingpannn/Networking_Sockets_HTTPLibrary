@@ -63,7 +63,7 @@ class HTTPC:
         # All arguments will be stored here
         self.__parsed_args = self.__parser.parse_args()
         self.__validate_data()
-        print('[User input data]: ', self.__parsed_args, '\n')
+        #print('[User input data]: ', self.__parsed_args, '\n')
     
     # Validates input header should contain 1 occurence of ':'
     def __validate_header(self, header):
@@ -148,11 +148,10 @@ def main():
     httpc.store_inputs()
     # Use our HTTP library to send request
     request = HTTPLibrary()
-    print(httpc.get_hostname())
     request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
                             httpc.get_data(),httpc.get_verbose(),httpc.get_output_path())
 
-    print('\n=====[END]=====\n')
+    print('\n===========[END]===========\n')
 
 if __name__ == "__main__":
     main()
