@@ -32,7 +32,19 @@ def Post_With_Inline_Data():
 
     library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE)
 
+'''Need to run redirectServer.py before testing this method'''
+def Redirect():
+    HOST = "localhost:8000"
+    HTTP_METHOD = "GET"
+    PATH = "/"
+    HEADERS = []
+    BODY_DATA = None
+    VERBOSE = True
 
-Example()
-Get_With_Query_Params()
-Post_With_Inline_Data()
+    library.sendHTTPRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE)
+
+
+# Example()
+# Get_With_Query_Params()
+# Post_With_Inline_Data()
+Redirect()

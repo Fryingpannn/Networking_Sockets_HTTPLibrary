@@ -140,7 +140,7 @@ or from an interactive prompt.
 - This is the program's starting point.
 '''
 def main():
-    print("\n=====[Pan & Smit's HTTP program]=====\n")
+    print("\n=====[Smit & Pan's HTTP program]=====\n")
 
     # Create parser class
     httpc = HTTPC()

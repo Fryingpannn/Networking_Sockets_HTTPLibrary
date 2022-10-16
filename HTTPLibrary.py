@@ -1,6 +1,5 @@
-from email.header import Header
 import socket
-
+from urllib.parse import urlparse
 
 class HTTPLibrary:
         
@@ -9,19 +8,18 @@ class HTTPLibrary:
 
     Method Parameters
         HOST: The host to send the request to. Should not include the protocol, only the domain names
-        HTTP METHOD
+        HTTP_METHOD
         PATH: String
-        QUERY_PARAMS: String
-        VERBOSE: Boolean
-        BODY_DATA
         HEADERS: An array of strings formatted as 'k:v'. Example: ['Content-Length: 17', 'User-Agent: Concordia-HTTP/1.0']
+        BODY_DATA
+        VERBOSE: Boolean
+        OUTPUT_FILE
     '''
     def sendHTTPRequest(self, HOST, HTTP_METHOD, PATH = "/", HEADERS = [], BODY_DATA = None, VERBOSE = False, OUTPUT_FILE = None):
-            # re-directional url parse to domain?
             if PATH == "":
                 PATH = "/"
             
-            # Contains PORT number
+            '''Contains PORT number'''
             if HOST.count(":") == 1:
                 HOST, PORT = HOST.split(":")
                 PORT = int(PORT)
@@ -36,25 +34,31 @@ class HTTPLibrary:
                 TCPSocket.sendall(request)
                 responseHeader, responseBody = self.__receiveResponse(TCPSocket)
 
+                '''Check if the response is 302: redirect'''
                 if (self.__responseHeaderContainsRedirection(responseHeader)):
-                    redirectionDomain = self.__findRedirectionDomain(responseHeader)
+                    redirectURL = self.__findRedirectURL(responseHeader)
 
-                    if redirectionDomain == "":
+                    if redirectURL == "":
                         print("Received 302 response code but didn't find the redirection URL")
                         return 
 
-                    self.sendHTTPRequestself(redirectionDomain, HTTP_METHOD, PATH, HEADERS, BODY_DATA, VERBOSE, OUTPUT_FILE)
+                    '''
+                    The redirectURL will of form http://example.com:PORT/path
+                    So need to parse out the Domain + Port and the Path + QueryParams
+                    '''
+                    parsedRedirectURL = urlparse(redirectURL)
+                    self.sendHTTPRequest(parsedRedirectURL.netloc, HTTP_METHOD, parsedRedirectURL.path, HEADERS, BODY_DATA, VERBOSE, OUTPUT_FILE)
 
                 else:
+                    if VERBOSE:
+                        print(responseHeader)
+
                     if OUTPUT_FILE is not None:
                         file = open(OUTPUT_FILE, "w")
                         file.write(responseBody)
                         file.close()
                     
-                    if VERBOSE:
-                        print(responseHeader)
-                    
-                    if OUTPUT_FILE is None:
+                    else:
                         print(responseBody)
 
     '''
@@ -97,7 +101,7 @@ class HTTPLibrary:
         BUFFER_SIZE = 1024
         response = b''
 
-        # Reads data in packets of length BUFFER_SIZE from the kernel buffer
+        '''Reads data in packets of length BUFFER_SIZE from the kernel buffer'''
         while True:
             packet = socket.recv(BUFFER_SIZE)
             response += packet
@@ -105,7 +109,7 @@ class HTTPLibrary:
         
         response = response.decode('utf-8')
 
-        # If responseBody does not exists
+        '''If responseBody does not exists'''
         if response.count('\r\n\r\n') < 1:
             return response, ""
         
@@ -119,12 +123,13 @@ class HTTPLibrary:
         return '302' in HEADERS[0]
 
 
-    def __findRedirectionDomain(self, responseHeaderString):
+    def __findRedirectURL(self, responseHeaderString):
         HEADERS = responseHeaderString.split('\r\n')
 
+        '''Find the Location header and get the redirect URL'''
         for HEADER in HEADERS:
             if 'location' in HEADER.lower():
-                key, value = HEADER.split(':')
+                key, value = HEADER.split(':', 1)                
                 return value.strip()
-        
+                
         return ""
