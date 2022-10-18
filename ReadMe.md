@@ -10,9 +10,6 @@
 - Inline data should not have spaces
 - If you're using Windows OS, file paths should use back-slashes ('\'), else paths should be forward-slashes ('/').
 
-### TODO
-- Need parse status and response code for response (Grading policy)
-
 
 ### Examples
 ##### Help display (-help)
@@ -27,7 +24,7 @@
 
 ##### Body data from file (-f)
 - Windows:
-`python3 httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra\data.json -v`
+`python httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra\data.json -v`
 - Mac:
 `python3 httpc.py POST https://httpbin.org/post -h Content-Type:application/json -f Extra/data.json -v`
 
