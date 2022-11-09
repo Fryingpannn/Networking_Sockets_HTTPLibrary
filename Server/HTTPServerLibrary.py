@@ -17,10 +17,6 @@ class HTTPServerLibrary:
 
         if not DIRECTORY: DIRECTORY = "Data"
         self.fileHandler.setDefaultDirectory(DIRECTORY)
-        names = FileHandler.getNamesOfAllFiles()
-        test = FileHandler.getFileContent('testfolder/kek.txt')
-        print(names)
-        print(test)
 
         #VERBOSE? 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

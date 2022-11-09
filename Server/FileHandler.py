@@ -76,4 +76,16 @@ class FileHandler:
         Possbile status code returned: 200, 400
     '''
     def writeToFile(filename, filecontent):
-        pass
+        try:
+            f = open(filename, "w")
+            f.write(filecontent)
+            f.close()
+            return {
+                'data': 'Successfully wrote file content.',
+                'statusCode': 200
+            }
+        except:
+            return {
+                'statusCode': 500,
+                'data': 'Error getting file content.'
+            }
