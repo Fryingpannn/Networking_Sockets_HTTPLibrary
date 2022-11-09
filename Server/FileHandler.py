@@ -11,8 +11,8 @@
         'data': 'Actual data or the error message'
     }
 '''
-
 import os
+import shutil
 from pathlib import Path
 
 class FileHandler:
@@ -24,10 +24,10 @@ class FileHandler:
         self.defaultDirectory = dirName        
         absolutePath = os.path.join(os.getcwd(), dirName)
 
-        # if Path(absolutePath).exists() and Path(absolutePath).is_dir():
-        #     shutil.rmtree(absolutePath)
+        if Path(absolutePath).exists() and Path(absolutePath).is_dir():
+            shutil.rmtree(absolutePath)
 
-        # Path(absolutePath).mkdir(parents=True)
+        Path(absolutePath).mkdir(parents=True)
 
     '''
         Possbile status code returned: 200
@@ -37,16 +37,14 @@ class FileHandler:
         try:
             # Array of file names
             files = [f for f in os.listdir(absolutePath) if os.path.isfile(os.path.join(absolutePath, f))]
-            print(0.6, files)
             return {
                 'statusCode': 200,
                 'data': '\n'.join(files)
             }
-        except:
-            print(0.7)
+        except Exception as e:
             return {
                 'statusCode': 500,
-                'data': 'Error getting names of files.'
+                'data': f'Error getting names of files: {e}'
             }
 
     '''
@@ -56,7 +54,6 @@ class FileHandler:
         filename = self.defaultDirectory + '/' + filename
         try:
             if not Path(filename).exists() or not Path(filename).is_file():
-                print(1)
                 return {
                     'statusCode': 404,
                     'data': 'File does not exist.'
@@ -64,22 +61,18 @@ class FileHandler:
                 
             with open(filename) as f: 
                 file_data = f.read()
-            print(2)
             return {
                 'data': file_data,
                 'statusCode': 200
             }
-        except:
-            print(3)
+        except Exception as e:
             return {
                 'statusCode': 500,
-                'data': 'Error getting file content.'
+                'data': f'Error getting file content: {e}'
             }
 
-
-
     '''
-        Possbile status code returned: 200, 400
+        Possbile status code returned: 200, 400, 500
     '''
     def writeToFile(self, filename, filecontent):
         filename = self.defaultDirectory + '/' + filename
@@ -91,8 +84,8 @@ class FileHandler:
                 'data': 'Successfully wrote file content.',
                 'statusCode': 200
             }
-        except:
+        except Exception as e:
             return {
                 'statusCode': 500,
-                'data': 'Error getting file content.'
+                'data': f'Error getting file content: {e}'
             }
