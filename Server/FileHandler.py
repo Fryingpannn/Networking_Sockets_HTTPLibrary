@@ -21,10 +21,8 @@ class FileHandler:
         self.defaultDirectory = 'Data'
 
     def setDefaultDirectory(self, dirName):
-        if (dirName is not None):
-            self.defaultDirectory = dirName
-        
-        absolutePath = os.path.join(Path().resolve, self.defaultDirectory)
+        self.defaultDirectory = dirName        
+        absolutePath = os.path.join(Path().resolve, dirName)
 
         if Path(absolutePath).exists() and Path(absolutePath).is_dir():
             shutil.rmtree(absolutePath)
