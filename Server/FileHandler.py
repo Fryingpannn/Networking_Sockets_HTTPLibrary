@@ -25,23 +25,27 @@ class FileHandler:
         self.defaultDirectory = dirName        
         absolutePath = os.path.join(os.getcwd(), dirName)
 
-        if Path(absolutePath).exists() and Path(absolutePath).is_dir():
-            shutil.rmtree(absolutePath)
+        # if Path(absolutePath).exists() and Path(absolutePath).is_dir():
+        #     shutil.rmtree(absolutePath)
 
-        Path(absolutePath).mkdir(parents=True)
+        # Path(absolutePath).mkdir(parents=True)
 
     '''
         Possbile status code returned: 200
     '''
-    def getNamesOfAllFiles():
+    def getNamesOfAllFiles(self):
+        absolutePath = os.path.join(os.getcwd(), self.defaultDirectory) + '/'
+        print(absolutePath)
         try:
             # Array of file names
-            files = [f for f in os.listdir('.') if os.path.isfile(f)]
+            files = [f for f in os.listdir(absolutePath) if os.path.isfile(f)]
+            print(0.6, files)
             return {
                 'statusCode': 200,
                 'data': '\n'.join(files)
             }
         except:
+            print(0.7)
             return {
                 'statusCode': 500,
                 'data': 'Error getting names of files.'
@@ -50,9 +54,11 @@ class FileHandler:
     '''
         Possbile status code returned: 200, 400, 404
     '''
-    def getFileContent(filename):   
+    def getFileContent(self,filename):
+        filename = self.defaultDirectory + '/' + filename
         try:
             if not Path(filename).exists() or not Path(filename).is_file():
+                print(1)
                 return {
                     'statusCode': 404,
                     'data': 'File does not exist.'
@@ -60,11 +66,13 @@ class FileHandler:
                 
             with open(filename) as f: 
                 file_data = f.read()
+            print(2)
             return {
                 'data': file_data,
                 'statusCode': 200
             }
         except:
+            print(3)
             return {
                 'statusCode': 500,
                 'data': 'Error getting file content.'
@@ -75,7 +83,8 @@ class FileHandler:
     '''
         Possbile status code returned: 200, 400
     '''
-    def writeToFile(filename, filecontent):
+    def writeToFile(self, filename, filecontent):
+        filename = self.defaultDirectory + '/' + filename
         try:
             f = open(filename, "w")
             f.write(filecontent)

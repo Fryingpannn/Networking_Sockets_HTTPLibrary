@@ -29,7 +29,7 @@ class HTTPServerLibrary:
                 
                 requestHeader, requestBody = self.__receiveResponse(client_connection)
                 filehandlerResponse = self.__processRequest(requestHeader, requestBody)
-                response = self.__prepareResponse(filehandlerResponse.statusCode, filehandlerResponse.data)
+                response = self.__prepareResponse(filehandlerResponse['statusCode'], filehandlerResponse['data'])
                 
                 client_connection.sendall(response)
                 client_connection.close()
@@ -72,7 +72,7 @@ class HTTPServerLibrary:
         METHOD = HTTP_META_INFORMATION[0].strip()
         PATH = HTTP_META_INFORMATION[1].strip()
 
-        if METHOD != 'GET' or METHOD != 'POST':
+        if METHOD != 'GET' and METHOD != 'POST':
             return {
                 'statusCode': 405,
                 'data': 'HTTP Method not supported: ' + METHOD
@@ -80,6 +80,7 @@ class HTTPServerLibrary:
         
         if METHOD == 'GET':
             if PATH == '/':
+                print(0)
                 return self.fileHandler.getNamesOfAllFiles()
             
             else:
@@ -102,7 +103,7 @@ class HTTPServerLibrary:
         request = ''
 
         request += 'HTTP/1.0 '
-        request += STATUS_CODE + ' ' + responses[STATUS_CODE]
+        request += str(STATUS_CODE) + ' ' + responses[STATUS_CODE]
 
         request += '\r\n\r\n'
         request += BODY
