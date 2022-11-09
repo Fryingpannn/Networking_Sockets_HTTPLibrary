@@ -15,6 +15,7 @@ class HTTPServerLibrary:
 
     def startServer(self, PORT, DIRECTORY = "Data", VERBOSE = False):
 
+        if not DIRECTORY: DIRECTORY = "Data"
         self.fileHandler.setDefaultDirectory(DIRECTORY)
         names = FileHandler.getNamesOfAllFiles()
         test = FileHandler.getFileContent('testfolder/kek.txt')
