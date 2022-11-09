@@ -22,7 +22,7 @@ class FileHandler:
 
     def setDefaultDirectory(self, dirName):
         self.defaultDirectory = dirName        
-        absolutePath = os.path.join(Path().resolve, dirName)
+        absolutePath = os.path.join(os.getcwd(), dirName)
 
         if Path(absolutePath).exists() and Path(absolutePath).is_dir():
             shutil.rmtree(absolutePath)

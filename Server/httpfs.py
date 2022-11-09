@@ -14,7 +14,7 @@ def validate_port(port, parser):
     if not port.isnumeric() or len(port) > 5:
         parser.error("Please input a valid port number.")
     
-    return port
+    return int(port)
 
 def validate_directory(directory, parser):
     return directory
