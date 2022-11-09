@@ -13,7 +13,6 @@
 '''
 
 import os
-import shutil
 from pathlib import Path
 
 class FileHandler:
@@ -35,10 +34,9 @@ class FileHandler:
     '''
     def getNamesOfAllFiles(self):
         absolutePath = os.path.join(os.getcwd(), self.defaultDirectory)
-        print(absolutePath)
         try:
             # Array of file names
-            files = [f for f in os.listdir(absolutePath) if os.path.isfile(f)]
+            files = [f for f in os.listdir(absolutePath) if os.path.isfile(os.path.join(absolutePath, f))]
             print(0.6, files)
             return {
                 'statusCode': 200,

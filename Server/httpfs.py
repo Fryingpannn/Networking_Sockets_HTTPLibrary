@@ -41,6 +41,4 @@ def main():
     print('\n===========[END]==========\n')
 
 if __name__ == "__main__":
-    http = HTTPServerLibrary()
-    http.startServer(int('8080'), None, False)
-    #main()
+    main()
