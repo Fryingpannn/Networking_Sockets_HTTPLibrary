@@ -3,6 +3,7 @@
         1) 200: All Good
         2) 404: File Not Found
         3) 400: Security issue
+        4) 500: Internal Server Error (Maybe failed to open file)
 
     Return Type: dict
     {
@@ -33,14 +34,42 @@ class FileHandler:
         Possbile status code returned: 200
     '''
     def getNamesOfAllFiles():
-        pass
-
+        try:
+            # Array of file names
+            files = [f for f in os.listdir('.') if os.path.isfile(f)]
+            return {
+                'statusCode': 200,
+                'data': '\n'.join(files)
+            }
+        except:
+            return {
+                'statusCode': 500,
+                'data': 'Error getting names of files.'
+            }
 
     '''
         Possbile status code returned: 200, 400, 404
     '''
-    def getFileContent(filename):
-        pass
+    def getFileContent(filename):   
+        try:
+            if not Path(filename).exists() or not Path(filename).is_file():
+                return {
+                    'statusCode': 404,
+                    'data': 'File does not exist.'
+                }
+                
+            with open(filename) as f: 
+                file_data = f.read()
+            return {
+                'data': file_data,
+                'statusCode': 200
+            }
+        except:
+            return {
+                'statusCode': 500,
+                'data': 'Error getting file content.'
+            }
+
 
 
     '''
