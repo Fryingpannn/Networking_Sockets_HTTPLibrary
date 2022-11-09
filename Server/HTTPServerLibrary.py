@@ -1,5 +1,5 @@
 import socket
-import httplib
+from http.client import responses
 from FileHandler import FileHandler
 
 '''
@@ -101,7 +101,7 @@ class HTTPServerLibrary:
         request = ''
 
         request += 'HTTP/1.0 '
-        request += STATUS_CODE + ' ' + httplib.responses[STATUS_CODE]
+        request += STATUS_CODE + ' ' + responses[STATUS_CODE]
 
         request += '\r\n\r\n'
         request += BODY
