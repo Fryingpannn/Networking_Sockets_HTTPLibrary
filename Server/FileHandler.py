@@ -34,7 +34,7 @@ class FileHandler:
         Possbile status code returned: 200
     '''
     def getNamesOfAllFiles(self):
-        absolutePath = os.path.join(os.getcwd(), self.defaultDirectory) + '/'
+        absolutePath = os.path.join(os.getcwd(), self.defaultDirectory)
         print(absolutePath)
         try:
             # Array of file names
