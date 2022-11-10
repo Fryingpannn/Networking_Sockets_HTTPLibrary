@@ -1,4 +1,5 @@
 import os
+import magic
 import shutil
 from pathlib import Path
 
@@ -11,10 +12,10 @@ class FileHandler:
         self.defaultDirectory = dirName        
         absolutePath = os.path.join(os.getcwd(), dirName)
 
-        if Path(absolutePath).exists() and Path(absolutePath).is_dir():
-            shutil.rmtree(absolutePath)
+        # if Path(absolutePath).exists() and Path(absolutePath).is_dir():
+        #     shutil.rmtree(absolutePath)
 
-        Path(absolutePath).mkdir(parents=True)
+        # Path(absolutePath).mkdir(parents=True)
 
     def getNamesOfAllFiles(self):
         absolutePath = os.path.join(os.getcwd(), self.defaultDirectory)
@@ -32,19 +33,25 @@ class FileHandler:
             }
 
     def getFileContent(self,filename):
-        filename = self.defaultDirectory + '/' + filename
+        file_path = self.defaultDirectory + '/' + filename
         try:
-            if not Path(filename).exists() or not Path(filename).is_file():
+            if not Path(file_path).exists() or not Path(file_path).is_file():
                 return {
                     'statusCode': 404,
                     'data': 'File does not exist.'
                 }
                 
-            with open(filename) as f: 
+            with open(file_path) as f: 
                 file_data = f.read()
+
+            mime = magic.Magic(mime=True)
+            CONTENT_TYPE = 'Content-Type: ' + mime.from_file(file_path) 
+            CONTENT_DISPOSITION = 'Content-Disposition: attachment; filename="' + filename + '"'
+
             return {
                 'data': file_data,
-                'statusCode': 200
+                'statusCode': 200,
+                'headers': [CONTENT_TYPE, CONTENT_DISPOSITION]
             }
         except Exception as e:
             return {

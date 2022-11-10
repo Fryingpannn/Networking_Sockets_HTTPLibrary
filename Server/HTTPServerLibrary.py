@@ -18,7 +18,6 @@ class HTTPServerLibrary:
         if not DIRECTORY: DIRECTORY = "Data"
         self.fileHandler.setDefaultDirectory(DIRECTORY)
 
-        #VERBOSE? 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
 
             server_socket.bind(('localhost', PORT))
@@ -29,7 +28,12 @@ class HTTPServerLibrary:
                 
                 requestHeader, requestBody = self.__receiveResponse(client_connection)
                 filehandlerResponse = self.__processRequest(requestHeader, requestBody)
-                response = self.__prepareResponse(filehandlerResponse['statusCode'], filehandlerResponse['data'])
+                response = self.__prepareResponse(filehandlerResponse)
+
+                if VERBOSE:
+                    print('Request from: ', client_connection, client_address)
+                    print('Request Data: ', requestHeader, requestBody)
+                    print('Response Data: ', response)
                 
                 client_connection.sendall(response)
                 client_connection.close()
@@ -61,9 +65,6 @@ class HTTPServerLibrary:
         1) Parses the HTTPHeader and extracts the METHOD and PATH
         2) Call the respective fileHandler method depending on the METHOD and PATH
     '''
-    #Things to check:
-    # METHOD and PATH are parsed correctly
-    # If the Path is empty, is it stored as '/' or '' in the HTTP Header
     def __processRequest(self, requestHeader, requestBody):
 
         HEADERS = requestHeader.split('\r\n')
@@ -80,7 +81,6 @@ class HTTPServerLibrary:
         
         if METHOD == 'GET':
             if PATH == '/':
-                print(0)
                 return self.fileHandler.getNamesOfAllFiles()
             
             else:
@@ -97,16 +97,23 @@ class HTTPServerLibrary:
                 return self.fileHandler.writeToFile(PATH[1:], requestBody)
 
 
-    # HTTP/1.0 200 OK\n\nHello World
-    # Do we need any other headers?
-    def __prepareResponse(self, STATUS_CODE, BODY):
+    def __prepareResponse(self, RESPONSEDATA):
+
+        STATUS_CODE = RESPONSEDATA.get('statusCode')
+        HEADERS = RESPONSEDATA.get('headers', [])
+        BODY = RESPONSEDATA.get('data', "")
+
         request = ''
 
         request += 'HTTP/1.0 '
         request += str(STATUS_CODE) + ' ' + responses[STATUS_CODE]
+        
+        for HEADER in HEADERS:
+            request += '\r\n' + HEADER
 
         request += '\r\n\r\n'
         request += BODY
 
         request += '\r\n'
+
         return request.encode()
