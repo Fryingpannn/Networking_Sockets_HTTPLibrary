@@ -1,16 +1,3 @@
-'''
-    Status Code: 
-        1) 200: All Good
-        2) 404: File Not Found
-        3) 400: Security issue
-        4) 500: Internal Server Error (Maybe failed to open file)
-
-    Return Type: dict
-    {
-        'statusCode': 'value',
-        'data': 'Actual data or the error message'
-    }
-'''
 import os
 import shutil
 from pathlib import Path
@@ -29,9 +16,6 @@ class FileHandler:
 
         Path(absolutePath).mkdir(parents=True)
 
-    '''
-        Possbile status code returned: 200
-    '''
     def getNamesOfAllFiles(self):
         absolutePath = os.path.join(os.getcwd(), self.defaultDirectory)
         try:
@@ -47,9 +31,6 @@ class FileHandler:
                 'data': f'Error getting names of files: {e}'
             }
 
-    '''
-        Possbile status code returned: 200, 400, 404
-    '''
     def getFileContent(self,filename):
         filename = self.defaultDirectory + '/' + filename
         try:
@@ -71,9 +52,6 @@ class FileHandler:
                 'data': f'Error getting file content: {e}'
             }
 
-    '''
-        Possbile status code returned: 200, 400, 500
-    '''
     def writeToFile(self, filename, filecontent):
         filename = self.defaultDirectory + '/' + filename
         try:
