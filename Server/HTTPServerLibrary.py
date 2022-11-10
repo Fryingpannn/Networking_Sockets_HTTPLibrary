@@ -80,7 +80,6 @@ class HTTPServerLibrary:
         
         if METHOD == 'GET':
             if PATH == '/':
-                print(0)
                 return self.fileHandler.getNamesOfAllFiles()
             
             else:
