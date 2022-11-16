@@ -33,6 +33,13 @@ class FileHandler:
             }
 
     def getFileContent(self,filename):
+        # If user tries to access outside of default directory
+        if '..' in filename:
+            return {
+                'statusCode': 403,
+                'data': 'Forbidden access.'
+            }
+
         file_path = self.defaultDirectory + '/' + filename
         try:
             if not Path(file_path).exists() or not Path(file_path).is_file():
@@ -60,6 +67,13 @@ class FileHandler:
             }
 
     def writeToFile(self, filename, filecontent):
+        # If user tries to access outside of default directory
+        if '..' in filename:
+            return {
+                'statusCode': 403,
+                'data': 'Forbidden access.'
+            }
+            
         filename = self.defaultDirectory + '/' + filename
         try:
             f = open(filename, "w")
