@@ -1,7 +1,7 @@
 import os
-import magic
 import shutil
 from pathlib import Path
+import mimetypes
 
 class FileHandler:
 
@@ -51,8 +51,7 @@ class FileHandler:
             with open(file_path) as f: 
                 file_data = f.read()
 
-            mime = magic.Magic(mime=True)
-            CONTENT_TYPE = 'Content-Type: ' + mime.from_file(file_path) 
+            CONTENT_TYPE = 'Content-Type: ' + mimetypes.guess_type(file_path)[0] 
             CONTENT_DISPOSITION = 'Content-Disposition: attachment; filename="' + filename + '"'
 
             return {

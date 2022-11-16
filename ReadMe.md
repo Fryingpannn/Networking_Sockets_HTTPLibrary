@@ -9,3 +9,4 @@ Note: use `python` command instead of `python3` if on Windows.
     - Read from specific file in directory `cd Client && python3 httpc.py GET http://localhost:8080/text.txt`
     - Write to a specific file in directory `cd Client && python3 httpc.py POST http://localhost:8080/text.txt -d hello TA!`
     - Test cannot read outside of default directory: `cd Client && python3 httpc.py GET http://localhost:8080/../cannot-access.txt`
+    - Tet content type and content disposition: `python3 httpc.py GET http://localhost:8080/hello.json -v`
