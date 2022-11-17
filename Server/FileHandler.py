@@ -1,7 +1,8 @@
 import os
 import shutil
-from pathlib import Path
 import mimetypes
+from pathlib import Path
+from FileLock import FileLock
 
 class FileHandler:
 
@@ -10,7 +11,7 @@ class FileHandler:
 
     def setDefaultDirectory(self, dirName):
         self.defaultDirectory = dirName        
-        absolutePath = os.path.join(os.getcwd(), dirName)
+        # absolutePath = os.path.join(os.getcwd(), dirName)
 
         # if Path(absolutePath).exists() and Path(absolutePath).is_dir():
         #     shutil.rmtree(absolutePath)
@@ -74,16 +75,19 @@ class FileHandler:
             }
             
         filename = self.defaultDirectory + '/' + filename
-        try:
-            f = open(filename, "w")
-            f.write(filecontent)
-            f.close()
-            return {
-                'data': 'Successfully wrote file content.',
-                'statusCode': 200
-            }
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'data': f'Error getting file content: {e}'
-            }
+
+        # Locking the file to perform the write operation
+        with FileLock(filename):
+            try:
+                f = open(filename, "w")
+                f.write(filecontent)
+                f.close()
+                return {
+                    'data': 'Successfully wrote file content.',
+                    'statusCode': 200
+                }
+            except Exception as e:
+                return {
+                    'statusCode': 500,
+                    'data': f'Error getting file content: {e}'
+                }

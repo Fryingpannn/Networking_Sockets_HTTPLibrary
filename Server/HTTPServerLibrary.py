@@ -1,6 +1,8 @@
 import socket
 from http.client import responses
 from FileHandler import FileHandler
+from threading import Thread
+import time
 
 '''
     PORT:       Integer     > Port to connect to
@@ -21,22 +23,40 @@ class HTTPServerLibrary:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
 
             server_socket.bind(('localhost', PORT))
-            server_socket.listen(1)
+            server_socket.listen(5)
 
             while True:    
                 client_connection, client_address = server_socket.accept()
                 
-                requestHeader, requestBody = self.__receiveResponse(client_connection)
-                filehandlerResponse = self.__processRequest(requestHeader, requestBody)
-                response = self.__prepareResponse(filehandlerResponse)
+                # Spin up a new thread on client request
+                thread = Thread(target = self.__handleClient, args = (client_connection, client_address, VERBOSE ))
+                thread.start()
 
-                if VERBOSE:
-                    print('Request from: ', client_connection, client_address)
-                    print('Request Data: ', requestHeader, requestBody)
-                    print('Response Data: ', response)
-                
-                client_connection.sendall(response)
-                client_connection.close()
+
+
+    def __handleClient(self, client_connection, client_address, VERBOSE):
+
+        requestHeader, requestBody = self.__receiveResponse(client_connection)
+
+        if VERBOSE:
+            print('Request from: ', client_connection, client_address)
+            print('Request Data: ', requestHeader.strip(), requestBody.strip())
+            print('\n')
+
+
+        # Mimicking slow response
+        time.sleep(10)
+
+        filehandlerResponse = self.__processRequest(requestHeader, requestBody)
+        response = self.__prepareResponse(filehandlerResponse)
+
+        if VERBOSE:
+            print('Response Data: ', response)
+            print('\n')
+        
+        client_connection.sendall(response)
+        client_connection.close()
+
 
 
     def __receiveResponse(self, socket):
