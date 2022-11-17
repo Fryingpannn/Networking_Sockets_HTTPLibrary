@@ -1,6 +1,6 @@
 # How to run
 Note: use `python` command instead of `python3` if on Windows.
-1. Run the server: `cd Server && python3 httpfs.py -p 8080`
+1. Run the server: `cd Server && python3 httpfs.py -p 8080 -v`
     - Here, you can also specifcy the directory path to read/write files in with `-d` (default: /Data)
     - You can also specify port with `-p` (default: 8080)
 2. Run the client: 
