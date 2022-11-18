@@ -2,7 +2,7 @@ import os
 import shutil
 import mimetypes
 from pathlib import Path
-from FileLock import FileLock
+from Modules.FileLock import FileLock
 
 class FileHandler:
 
