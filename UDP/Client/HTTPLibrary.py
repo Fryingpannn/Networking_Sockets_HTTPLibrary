@@ -1,6 +1,9 @@
 import socket
-from packet import Packet
 from urllib.parse import urlparse
+
+import sys
+sys.path.append('../')
+from packet import Packet
 from packetType import PacketType
 
 class HTTPLibrary:

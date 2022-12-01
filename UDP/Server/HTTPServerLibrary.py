@@ -2,6 +2,9 @@ import socket
 from http.client import responses
 from FileHandler import FileHandler
 from threading import Thread
+
+import sys
+sys.path.append('../')
 from packet import Packet
 
 '''
@@ -29,7 +32,7 @@ class HTTPServerLibrary:
             server_socket.bind(('localhost', PORT))
             
             while True:
-                data, sender = socket.recvfrom(1024)
+                data, sender = server_socket.recvfrom(1024)
                 # Spin up a new thread on new packet
                 thread = Thread(target = self.__handleClient, args = (server_socket, data, sender, VERBOSE))
                 thread.start()
