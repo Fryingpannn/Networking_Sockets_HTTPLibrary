@@ -40,4 +40,5 @@
         - Buffer it and send a NAK of {expected sequence number}
         - Send a ACK of c?
 
-    - Buffering?
+- Buffering?
+- Packet number: Data, SYN, ACK, etc

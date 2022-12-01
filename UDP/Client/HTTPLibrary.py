@@ -1,6 +1,7 @@
 import socket
 from packet import Packet
 from urllib.parse import urlparse
+from packetType import PacketType
 
 class HTTPLibrary:
 
@@ -39,7 +40,7 @@ class HTTPLibrary:
 
                 requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
                 
-                self.__convertToPacketsAndSendToServer(socket, requestData, HOST, PORT)
+                self.__convertToPacketsAndSend(socket, requestData, PacketType.DATA, HOST, PORT)
                 
                 # Receive response
                 responseHeader, responseBody = self.__receiveResponse(UDPSocket)
@@ -109,13 +110,18 @@ class HTTPLibrary:
     '''
     def __receiveResponse(self, socket):
         BUFFER_SIZE = 1024
+        PAYLOAD_SIZE = 1013
         response = b''
 
         '''Reads data in packets of length BUFFER_SIZE from the kernel buffer'''
         while True:
-            packet = socket.recv(BUFFER_SIZE)
-            response += packet
-            if len(packet) < BUFFER_SIZE: break   # Last packet
+            byteData, sender = socket.recvfrom(BUFFER_SIZE)
+            packet = Packet.from_bytes(byteData)
+
+            # Implement Selective Repeat with ACK and buffer
+
+            response += packet.payload
+            if len(packet) < PAYLOAD_SIZE: break   # Last packet
         
         response = response.decode('utf-8')
 
@@ -145,18 +151,25 @@ class HTTPLibrary:
         return ""
 
 
-    def __convertToPacketsAndSendToServer(socket, requestData, server_ip, server_port):
-
-        router_addr = 'localhost'
-        router_port = 3005
-        curr_seq_num = 0
+    '''
+        Internal Method:
+            Takes in the application level payload and transform it into a 1024 byte UDP datagram
+            The first 11 bytes of the datagram are UDP headers
+            The remaining 1013 bytes is for the application level payload
+    '''
+    def __convertToPacketsAndSend(self, socket, requestData, packet_type, server_ip, server_port):
         
-        packet = Packet(packet_type=0,
-                        seq_num = curr_seq_num,
-                        peer_ip_addr = server_ip,
-                        peer_port = server_port,
-                        payload = requestData)
+        for chunk in self.__chunkstring(requestData, 1013):
+            packet = Packet(packet_type = packet_type.value,
+                            seq_num = self.curr_seq_num,
+                            peer_ip_addr = server_ip,
+                            peer_port = server_port,
+                            payload = chunk)
 
-        socket.sendto(packet.to_bytes(), (router_addr, router_port))
+            socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
+            self.curr_seq_num += 1
 
-        pass
+        # Implement Selective Repeat with ACK and timeouts
+
+    def __chunkstring(string, length):
+        return (string[0+i:length+i] for i in range(0, len(string), length))
