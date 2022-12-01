@@ -1,7 +1,13 @@
 import socket
+from packet import Packet
 from urllib.parse import urlparse
 
 class HTTPLibrary:
+
+    def __init__(self): 
+        self.curr_seq_num = 0
+        self.router_addr = 'localhost'
+        self.router_port = 3000
         
     '''
     Description: Send a HTTP request via a TCP socket
@@ -26,13 +32,17 @@ class HTTPLibrary:
             else:
                 PORT = 80
 
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as TCPSocket:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as UDPSocket:
                 
-                TCPSocket.connect((HOST, PORT))
+                # Implement 3 way handshake
+                # UDPSocket.connect((HOST, PORT))
 
-                request = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
-                TCPSocket.sendall(request)
-                responseHeader, responseBody = self.__receiveResponse(TCPSocket)
+                requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
+                
+                self.__convertToPacketsAndSendToServer(socket, requestData, HOST, PORT)
+                
+                # Receive response
+                responseHeader, responseBody = self.__receiveResponse(UDPSocket)
 
                 '''Check if the response is 302: redirect'''
                 if (self.__responseHeaderContainsRedirection(responseHeader)):
@@ -133,3 +143,20 @@ class HTTPLibrary:
                 return value.strip()
                 
         return ""
+
+
+    def __convertToPacketsAndSendToServer(socket, requestData, server_ip, server_port):
+
+        router_addr = 'localhost'
+        router_port = 3005
+        curr_seq_num = 0
+        
+        packet = Packet(packet_type=0,
+                        seq_num = curr_seq_num,
+                        peer_ip_addr = server_ip,
+                        peer_port = server_port,
+                        payload = requestData)
+
+        socket.sendto(packet.to_bytes(), (router_addr, router_port))
+
+        pass
