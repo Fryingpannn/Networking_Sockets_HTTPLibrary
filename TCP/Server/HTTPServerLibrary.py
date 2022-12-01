@@ -45,7 +45,7 @@ class HTTPServerLibrary:
 
 
         # Mimicking slow response
-        time.sleep(10)
+        # time.sleep(10)
 
         filehandlerResponse = self.__processRequest(requestHeader, requestBody)
         response = self.__prepareResponse(filehandlerResponse)

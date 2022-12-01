@@ -53,7 +53,7 @@ class FileHandler:
                 file_data = f.read()
 
             CONTENT_TYPE = 'Content-Type: ' + mimetypes.guess_type(file_path)[0] 
-            CONTENT_DISPOSITION = 'Content-Disposition: attachment; filename="' + filename + '"'
+            CONTENT_DISPOSITION = 'Content-Disposition: inline; filename="' + filename + '"'
 
             return {
                 'data': file_data,
