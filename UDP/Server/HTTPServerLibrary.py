@@ -2,7 +2,7 @@ import socket
 from http.client import responses
 from FileHandler import FileHandler
 from threading import Thread
-import time
+from packet import Packet
 
 '''
     PORT:       Integer     > Port to connect to
@@ -14,35 +14,32 @@ class HTTPServerLibrary:
 
     def __init__(self): 
         self.fileHandler = FileHandler()
+        self.senders = {}
+        self.curr_seq_num = 0
+        self.router_addr = 'localhost'
+        self.router_port = 3000
 
     def startServer(self, PORT, DIRECTORY = "Data", VERBOSE = False):
 
         if not DIRECTORY: DIRECTORY = "Data"
         self.fileHandler.setDefaultDirectory(DIRECTORY)
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
 
             server_socket.bind(('localhost', PORT))
-            server_socket.listen(5)
-
-            while True:    
-                client_connection, client_address = server_socket.accept()
-                
-                # Spin up a new thread on client request
-                thread = Thread(target = self.__handleClient, args = (client_connection, client_address, VERBOSE ))
+            
+            while True:
+                data, sender = socket.recvfrom(1024)
+                # Spin up a new thread on new packet
+                thread = Thread(target = self.__handleClient, args = (server_socket, data, sender, VERBOSE))
                 thread.start()
 
 
 
-    def __handleClient(self, client_connection, client_address, VERBOSE):
+    def __handleClient(self, conn, data, sender, VERBOSE=False):
+        requestHeader, requestBody, client_port, packet_type = self.__receiveResponse(conn, data, sender, VERBOSE)
 
-        requestHeader, requestBody = self.__receiveResponse(client_connection)
-
-        if VERBOSE:
-            print('Request from: ', client_connection, client_address)
-            print('Request Data: ', requestHeader.strip(), requestBody.strip())
-            print('\n')
-
+        if VERBOSE: print('Request from: ', sender)
 
         # Mimicking slow response
         # time.sleep(10)
@@ -53,23 +50,32 @@ class HTTPServerLibrary:
         if VERBOSE:
             print('Response Data: ', response)
             print('\n')
+
+        response_with_udp = self.__convertToPacketsAndSend(conn, response, packet_type, sender, client_port)
         
-        client_connection.sendall(response)
-        client_connection.close()
+        # The peer address of the packet p is the address of the client already.
+        # We will send the same payload of p. Thus we can re-use either `data` or `p`.
+        conn.sendto(response_with_udp.to_bytes(), sender)
+        conn.close()
 
 
 
-    def __receiveResponse(self, socket):
+    def __receiveResponse(self, conn, data, sender, VERBOSE=False):
         BUFFER_SIZE = 1024
         response = b''
 
         '''Reads data in packets of length BUFFER_SIZE from the kernel buffer'''
-        while True:
-            packet = socket.recv(BUFFER_SIZE)
-            response += packet
-            if len(packet) < BUFFER_SIZE: break   # Last packet
+        try:
+            p = Packet.from_bytes(data)
+            if VERBOSE:
+                print("Router: ", sender)
+                print("Packet: ", p)
+                print("Payload: ", p.payload.decode("utf-8"))
+
+        except Exception as e:
+            print("Error: ", e)
         
-        response = response.decode('utf-8')
+        response = p.payload.decode("utf-8")
 
         '''If responseBody does not exists'''
         if response.count('\r\n\r\n') < 1:
@@ -77,7 +83,7 @@ class HTTPServerLibrary:
         
         else:
             responseHeader, responseBody = response.split('\r\n\r\n', 1)
-            return responseHeader, responseBody
+            return responseHeader, responseBody, p.peer_port, p.packet_type
 
 
     '''
@@ -137,3 +143,26 @@ class HTTPServerLibrary:
         request += '\r\n'
 
         return request.encode()
+
+    '''
+        Internal Method:
+            Takes in the application level payload and transform it into a 1024 byte UDP datagram
+            The first 11 bytes of the datagram are UDP headers
+            The remaining 1013 bytes is for the application level payload
+    '''
+    def __convertToPacketsAndSend(self, socket, requestData, packet_type, client_ip, client_port):
+        
+        for chunk in self.__chunkstring(requestData, 1013):
+            packet = Packet(packet_type = packet_type.value,
+                            seq_num = self.curr_seq_num,
+                            peer_ip_addr = client_ip,
+                            peer_port = client_port,
+                            payload = chunk)
+
+            socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
+            self.curr_seq_num += 1
+
+        # Implement Selective Repeat with ACK and timeouts
+
+    def __chunkstring(string, length):
+        return (string[0+i:length+i] for i in range(0, len(string), length))
