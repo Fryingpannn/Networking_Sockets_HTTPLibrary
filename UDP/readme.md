@@ -1,7 +1,7 @@
 # How to run
 Note: use `python3` command instead of `python` if on Mac.
 
-1. Run the Router: `cd Router && router_x64.exe --port=3000 --drop-rate=0.2 --max-delay=10ms --seed=1`
+1. Run the Router: `cd Router && router_x64.exe --port=3000 --drop-rate=0.0 --max-delay=10ms --seed=1`
 2. Run the server: `cd Server && python httpfs.py -p 8080 -v`
     - Here, you can also specifcy the directory path to read/write files in with `-d` (default: /Data)
     - You can also specify port with `-p` (default: 8080)

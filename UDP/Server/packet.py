@@ -12,7 +12,7 @@ class Packet:
     def __init__(self, packet_type, seq_num, peer_ip_addr, peer_port, payload):
         self.packet_type = int(packet_type)
         self.seq_num = int(seq_num)
-        self.peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(peer_ip_addr))
+        self.peer_ip_addr = peer_ip_addr
         self.peer_port = int(peer_port)
         self.payload = payload
 

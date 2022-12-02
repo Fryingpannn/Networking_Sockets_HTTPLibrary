@@ -1,8 +1,6 @@
 import socket
+import ipaddress
 from urllib.parse import urlparse
-
-# import sys
-# sys.path.append('../')
 from packet import Packet
 from packetType import PacketType
 
@@ -160,21 +158,17 @@ class HTTPClientLibrary:
             The first 11 bytes of the datagram are UDP headers
             The remaining 1013 bytes is for the application level payload
     '''
-    def __convertToPacketsAndSend(self, socket, requestData, packet_type, server_addr, server_port):
+    def __convertToPacketsAndSend(self, connection_socket, requestData, packet_type, server_addr, server_port):
         
         for chunk in self.__chunkstring(requestData, 1013):
             packet = Packet(packet_type = packet_type.value,
                             seq_num = self.curr_seq_num,
-                            peer_ip_addr = server_addr,
+                            peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(server_addr)),
                             peer_port = server_port,
                             payload = chunk)
 
-            # print(server_ip, server_port)
-            # print(socket.gethostbyname(server_ip))
-
-            # cd Client && python httpc.py GET http://localhost:8080
             
-            socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
+            connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
             self.curr_seq_num += 1
 
         # Implement Selective Repeat with ACK and timeouts
