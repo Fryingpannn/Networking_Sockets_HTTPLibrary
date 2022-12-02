@@ -3,8 +3,8 @@ from http.client import responses
 from FileHandler import FileHandler
 from threading import Thread
 
-import sys
-sys.path.append('../')
+# import sys
+# sys.path.append('../')
 from packet import Packet
 from packetType import PacketType
 
@@ -56,20 +56,14 @@ class HTTPServerLibrary:
             print('Response Data: ', response)
             print('\n')
 
-        response_with_udp = self.__convertToPacketsAndSend(conn, response, PacketType.Data, sender, client_port)
-        
-        # The peer address of the packet p is the address of the client already.
-        # We will send the same payload of p. Thus we can re-use either `data` or `p`.
-        conn.sendto(response_with_udp.to_bytes(), sender)
-        conn.close()
-
-
+        self.__convertToPacketsAndSend(conn, response, PacketType.DATA, sender, client_port)
 
     def __receiveResponse(self, conn, data, sender, VERBOSE=False):
         BUFFER_SIZE = 1024
         response = b''
 
         '''Reads data in packets of length BUFFER_SIZE from the kernel buffer'''
+        p = 'None'
         try:
             p = Packet.from_bytes(data)
             if VERBOSE:
@@ -160,7 +154,7 @@ class HTTPServerLibrary:
         for chunk in self.__chunkstring(requestData, 1013):
             packet = Packet(packet_type = packet_type.value,
                             seq_num = self.curr_seq_num,
-                            peer_ip_addr = client_ip,
+                            peer_ip_addr = client_ip[0],
                             peer_port = client_port,
                             payload = chunk)
 

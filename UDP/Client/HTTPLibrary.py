@@ -1,8 +1,8 @@
 import socket
 from urllib.parse import urlparse
 
-import sys
-sys.path.append('../')
+# import sys
+# sys.path.append('../')
 from packet import Packet
 from packetType import PacketType
 
@@ -124,7 +124,7 @@ class HTTPLibrary:
             # Implement Selective Repeat with ACK and buffer
 
             response += packet.payload
-            if len(packet) < PAYLOAD_SIZE: break   # Last packet
+            if len(packet.payload) < PAYLOAD_SIZE: break   # Last packet
         
         response = response.decode('utf-8')
 

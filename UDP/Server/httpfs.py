@@ -27,7 +27,7 @@ def main():
     # When storing arguments, can use parameters to perform extra parsing
     parser.add_argument('-help', action='help', help='Show this help message and exit')
     parser.add_argument('-v', dest='verbose', help='Verbose mode. Display more information for a given request.',
-                        default=False, action='store_true')
+                        default=True, action='store_true')
     parser.add_argument('-p', dest='port', help='Specifies the port number that the server will listen and serve at. Default is 8080.',
                         type=lambda port: validate_port(port,parser), default='8080')
     parser.add_argument('-d', dest='directory', help='Specifies the directory that the server will use to read/write requested\
