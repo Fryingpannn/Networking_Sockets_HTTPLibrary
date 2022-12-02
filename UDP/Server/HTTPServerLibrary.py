@@ -6,6 +6,7 @@ from threading import Thread
 import sys
 sys.path.append('../')
 from packet import Packet
+from packetType import PacketType
 
 '''
     PORT:       Integer     > Port to connect to
@@ -55,7 +56,7 @@ class HTTPServerLibrary:
             print('Response Data: ', response)
             print('\n')
 
-        response_with_udp = self.__convertToPacketsAndSend(conn, response, packet_type, sender, client_port)
+        response_with_udp = self.__convertToPacketsAndSend(conn, response, PacketType.Data, sender, client_port)
         
         # The peer address of the packet p is the address of the client already.
         # We will send the same payload of p. Thus we can re-use either `data` or `p`.

@@ -44,7 +44,7 @@ class HTTPLibrary:
                 requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
                 
                 self.__convertToPacketsAndSend(UDPSocket, requestData, PacketType.DATA, HOST, PORT)
-                
+   
                 # Receive response
                 responseHeader, responseBody = self.__receiveResponse(UDPSocket)
 
@@ -160,12 +160,12 @@ class HTTPLibrary:
             The first 11 bytes of the datagram are UDP headers
             The remaining 1013 bytes is for the application level payload
     '''
-    def __convertToPacketsAndSend(self, socket, requestData, packet_type, server_ip, server_port):
+    def __convertToPacketsAndSend(self, socket, requestData, packet_type, server_addr, server_port):
         
         for chunk in self.__chunkstring(requestData, 1013):
             packet = Packet(packet_type = packet_type.value,
                             seq_num = self.curr_seq_num,
-                            peer_ip_addr = server_ip,
+                            peer_ip_addr = server_addr,
                             peer_port = server_port,
                             payload = chunk)
 

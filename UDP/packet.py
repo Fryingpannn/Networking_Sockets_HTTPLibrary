@@ -1,4 +1,5 @@
 import ipaddress
+import socket
 
 MIN_LEN = 11
 MAX_LEN = 1024
@@ -8,11 +9,10 @@ class Packet:
     """
     Packet represents a simulated UDP packet.
     """
-
     def __init__(self, packet_type, seq_num, peer_ip_addr, peer_port, payload):
         self.packet_type = int(packet_type)
         self.seq_num = int(seq_num)
-        self.peer_ip_addr = peer_ip_addr
+        self.peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(peer_ip_addr))
         self.peer_port = int(peer_port)
         self.payload = payload
 
@@ -23,7 +23,7 @@ class Packet:
         buf = bytearray()
         buf.extend(self.packet_type.to_bytes(1, byteorder='big'))
         buf.extend(self.seq_num.to_bytes(4, byteorder='big'))
-        buf.extend(str.encode(self.peer_ip_addr))
+        buf.extend(self.peer_ip_addr.packed)
         buf.extend(self.peer_port.to_bytes(2, byteorder='big'))
 
         buf.extend(self.payload)
