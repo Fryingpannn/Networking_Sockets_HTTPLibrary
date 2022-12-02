@@ -1,8 +1,8 @@
 '''
 Selective Repeat Program
 - Run this on seperate thread
-- The HTTP data + UDP headers packet (segment) will be sent here
-- This acts as "link layer" but uses UDP function to send.
+- The final packet will be sent here
+- This acts as "link layer" but uses UDP function to send. (Selective repeat is a link layer protocol)
 '''
 import asyncio
 from threading import Lock
