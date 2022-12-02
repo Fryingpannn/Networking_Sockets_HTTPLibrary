@@ -34,17 +34,16 @@ class HTTPClientLibrary:
             else:
                 PORT = 80
 
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as UDPSocket:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
                 
                 # Implement 3 way handshake
-                # UDPSocket.connect((HOST, PORT))
+                # client_socket.connect((HOST, PORT))
 
                 requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
-                
-                self.__convertToPacketsAndSend(UDPSocket, requestData, PacketType.DATA, HOST, PORT)
+                self.__convertToPacketsAndSend(client_socket, requestData, PacketType.DATA, HOST, PORT)
    
                 # Receive response
-                responseHeader, responseBody = self.__receiveResponse(UDPSocket)
+                responseHeader, responseBody = self.__receiveResponse(client_socket)
 
                 '''Check if the response is 302: redirect'''
                 if (self.__responseHeaderContainsRedirection(responseHeader)):
