@@ -10,7 +10,7 @@ Note: use `python3` command instead of `python` if on Mac.
     - Read from specific file in directory `cd Client && python httpc.py GET http://localhost:8080/text.txt`
     - Write to a specific file in directory `cd Client && python httpc.py POST http://localhost:8080/text.txt -d "hello TAA!"`
     - Test cannot read outside of default directory: `cd Client && python httpc.py GET http://localhost:8080/../cannot-access.txt`
-    - Test content type and content disposition: `python httpc.py GET http://localhost:8080/hello.json -v`
+    - Test content type and content disposition: `cd Client && python httpc.py GET http://localhost:8080/hello.json -v`
     - Test multiple connections
         - Uncomment the time.sleep(10) line in HTTPServerLibrary.py
         - Spin up 2 new terminal instances and type:

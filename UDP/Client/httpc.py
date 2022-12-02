@@ -23,7 +23,7 @@ REQUEST REFERENCE
 import argparse
 from enum import Enum
 from urllib.parse import urlparse
-from HTTPLibrary import HTTPLibrary
+from HTTPClientLibrary import HTTPClientLibrary
 
 # Enum for HTTP methods
 class HTTPMethod(Enum):
@@ -147,7 +147,7 @@ def main():
     # Store user CLI inputs
     httpc.store_inputs()
     # Use our HTTP library to send request
-    request = HTTPLibrary()
+    request = HTTPClientLibrary()
     request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
                             httpc.get_data(),httpc.get_verbose(),httpc.get_output_path())
 

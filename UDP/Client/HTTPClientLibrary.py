@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from packet import Packet
 from packetType import PacketType
 
-class HTTPLibrary:
+class HTTPClientLibrary:
 
     def __init__(self): 
         self.curr_seq_num = 0

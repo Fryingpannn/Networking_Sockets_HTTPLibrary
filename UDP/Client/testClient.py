@@ -1,6 +1,6 @@
-from HTTPLibrary import HTTPLibrary
+from HTTPClientLibrary import HTTPClientLibrary
 
-library = HTTPLibrary()
+library = HTTPClientLibrary()
 
 def Example():
     HOST = "httpbin.org"

@@ -10,3 +10,9 @@
 00:32:55.569228 [queue=0] packet #0, 127.0.0.1:62096 -> 127.0.0.1:8080, sz=58 is delivered
 00:32:55.598063 [queue=1] packet #0, 127.0.0.1:8080 -> 127.0.0.1:62096, sz=113 is delayed for 5.9ms
 00:32:55.605026 [queue=0] packet #0, 127.0.0.1:8080 -> 127.0.0.1:62096, sz=113 is delivered
+00:34:30.633049 config: drop-rate=0.20, max-delay=10ms, seed=1
+00:34:30.635447 router is listening at :3000
+00:35:00.753458 [queue=1] packet #0, 127.0.0.1:49431 -> 127.0.0.1:8080, sz=68 is delayed for 8.7ms
+00:35:00.762478 [queue=0] packet #0, 127.0.0.1:49431 -> 127.0.0.1:8080, sz=68 is delivered
+00:35:01.474029 [queue=1] packet #0, 127.0.0.1:8080 -> 127.0.0.1:49431, sz=114 is delayed for 5.9ms
+00:35:01.480421 [queue=0] packet #0, 127.0.0.1:8080 -> 127.0.0.1:49431, sz=114 is delivered

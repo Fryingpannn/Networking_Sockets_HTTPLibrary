@@ -3,8 +3,6 @@ from http.client import responses
 from FileHandler import FileHandler
 from threading import Thread
 
-# import sys
-# sys.path.append('../')
 from packet import Packet
 from packetType import PacketType
 
@@ -34,7 +32,7 @@ class HTTPServerLibrary:
             
             while True:
                 data, sender = server_socket.recvfrom(1024)
-                print("Received Data + ", data)
+
                 # Spin up a new thread on new packet
                 thread = Thread(target = self.__handleClient, args = (server_socket, data, sender, VERBOSE))
                 thread.start()
@@ -63,18 +61,18 @@ class HTTPServerLibrary:
         response = b''
 
         '''Reads data in packets of length BUFFER_SIZE from the kernel buffer'''
-        p = 'None'
+        packet = 'None'
         try:
-            p = Packet.from_bytes(data)
+            packet = Packet.from_bytes(data)
             if VERBOSE:
                 print("Router: ", sender)
-                print("Packet: ", p)
-                print("Payload: ", p.payload.decode("utf-8"))
+                print("Packet: ", packet)
+                print("Payload: ", packet.payload.decode("utf-8"))
 
         except Exception as e:
             print("Error: ", e)
         
-        response = p.payload.decode("utf-8")
+        response = packet.payload.decode("utf-8")
 
         '''If responseBody does not exists'''
         if response.count('\r\n\r\n') < 1:
