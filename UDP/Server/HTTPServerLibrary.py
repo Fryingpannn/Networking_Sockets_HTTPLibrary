@@ -33,6 +33,7 @@ class HTTPServerLibrary:
             
             while True:
                 data, sender = server_socket.recvfrom(1024)
+                print("Received Data + ", data)
                 # Spin up a new thread on new packet
                 thread = Thread(target = self.__handleClient, args = (server_socket, data, sender, VERBOSE))
                 thread.start()
@@ -167,5 +168,5 @@ class HTTPServerLibrary:
 
         # Implement Selective Repeat with ACK and timeouts
 
-    def __chunkstring(string, length):
+    def __chunkstring(self, string, length):
         return (string[0+i:length+i] for i in range(0, len(string), length))

@@ -43,7 +43,7 @@ class HTTPLibrary:
 
                 requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
                 
-                self.__convertToPacketsAndSend(socket, requestData, PacketType.DATA, HOST, PORT)
+                self.__convertToPacketsAndSend(UDPSocket, requestData, PacketType.DATA, HOST, PORT)
                 
                 # Receive response
                 responseHeader, responseBody = self.__receiveResponse(UDPSocket)
@@ -169,10 +169,15 @@ class HTTPLibrary:
                             peer_port = server_port,
                             payload = chunk)
 
+            # print(server_ip, server_port)
+            # print(socket.gethostbyname(server_ip))
+
+            # cd Client && python httpc.py GET http://localhost:8080
+            
             socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
             self.curr_seq_num += 1
 
         # Implement Selective Repeat with ACK and timeouts
 
-    def __chunkstring(string, length):
+    def __chunkstring(self, string, length):
         return (string[0+i:length+i] for i in range(0, len(string), length))

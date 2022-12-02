@@ -23,7 +23,7 @@ class Packet:
         buf = bytearray()
         buf.extend(self.packet_type.to_bytes(1, byteorder='big'))
         buf.extend(self.seq_num.to_bytes(4, byteorder='big'))
-        buf.extend(self.peer_ip_addr.packed)
+        buf.extend(str.encode(self.peer_ip_addr))
         buf.extend(self.peer_port.to_bytes(2, byteorder='big'))
 
         buf.extend(self.payload)
