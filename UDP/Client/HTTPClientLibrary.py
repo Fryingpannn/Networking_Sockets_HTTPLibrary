@@ -35,9 +35,8 @@ class HTTPClientLibrary:
                 PORT = 80
 
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
-                
-                # Implement 3 way handshake
-                # client_socket.connect((HOST, PORT))
+
+                self.__handshake(client_socket, HOST, PORT)
 
                 requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
                 self.__convertToPacketsAndSend(client_socket, requestData, PacketType.DATA, HOST, PORT)
@@ -149,6 +148,50 @@ class HTTPClientLibrary:
                 return value.strip()
                 
         return ""
+
+
+    def __handshake(self, connection_socket, server_addr, server_port):
+        HANDSHAKE_CONNECTION_TIMEOUT = 2.0  # In seconds
+
+        print("Initiating handshake....")
+
+        # SYN
+        packet = Packet(packet_type = PacketType.SYN.value,
+                        seq_num = 0,
+                        peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(server_addr)),
+                        peer_port = server_port,
+                        payload = "")
+        
+        connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
+        print("SYN sent")
+
+        # SYN-ACK
+        try:
+            # Set timeout, if not received within timeout, send hanshake again
+            connection_socket.settimeout(HANDSHAKE_CONNECTION_TIMEOUT)
+            byteData, sender = connection_socket.recvfrom(1024)
+            packet = Packet.from_bytes(byteData)
+
+            connection_socket.settimeout(None)
+            print("SYN-ACK received")
+        
+        except socket.timeout:
+            print("SYN-ACK timeout. Restarting handshake...")
+            self.__handshake(connection_socket, server_addr, server_port)
+            return
+
+
+        # ACK
+        packet = Packet(packet_type = PacketType.ACK.value,
+                        seq_num = 0,
+                        peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(server_addr)),
+                        peer_port = server_port,
+                        payload = "")
+
+        connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
+        print("ACK sent")
+
+        print("Handshake complete\n")
 
 
     '''

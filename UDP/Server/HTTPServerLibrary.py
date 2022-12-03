@@ -40,7 +40,7 @@ class HTTPServerLibrary:
                     new_thread.start()
 
                 # Push data for this new connection
-                self.threadMap[sourceAddress].queue.put(packet.payload)
+                self.threadMap[sourceAddress].queue.put(packet)
 
 
 class UDPRequest(threading.Thread):
@@ -65,17 +65,21 @@ class UDPRequest(threading.Thread):
         MAX_PAYLOAD_SIZE = 1013
 
         while True:
-            payload = self.queue.get()
-            self.requestPayload += payload.decode("utf-8")
+            packet = self.queue.get()
+            packetType = PacketType(packet.packet_type)
 
-            # last packet
-            if len(self.requestPayload) < MAX_PAYLOAD_SIZE:
-                break
+            if packetType == PacketType.SYN:
+                self.__handleHandshake()
 
-        # Implement Selective Repeat with ACK and buffering
-        # close the thread ?
+            elif packetType == PacketType.DATA:
+                self.requestPayload += packet.payload.decode("utf-8")
 
-        '''If responseBody does not exists'''
+                # last packet
+                if len(self.requestPayload) < MAX_PAYLOAD_SIZE:
+                    break
+
+
+        '''If requestBody does not exists'''
         if self.requestPayload.count('\r\n\r\n') < 1:
             responseHeader, responseBody = self.requestPayload, ""
         
@@ -85,6 +89,21 @@ class UDPRequest(threading.Thread):
 
         self.__handleRequest(responseHeader, responseBody)
 
+
+
+    def __handleHandshake(self):
+            # SYN
+            print("SYN request received")
+            
+            # SYN-ACK
+            print("Sending SYN-ACK...")
+            packet = Packet(packet_type = PacketType.SYN.value,
+                            seq_num = 0,
+                            peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(self.clientIPAddress)),
+                            peer_port = self.clientPort,
+                            payload = "")
+
+            self.connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
 
 
     def __handleRequest(self, requestHeader, requestBody):

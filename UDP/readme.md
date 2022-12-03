@@ -61,5 +61,12 @@ Note: use `python3` command instead of `python` if on Mac.
         - Buffer it and send a NAK of {expected sequence number}
         - Send a ACK of c?
 
-- Buffering?
-- Packet number: Data, SYN, ACK, etc
+### Handshake Logic
+
+- Client sends a SYN and then waits for a SYN-ACK with a timout set
+    - If the SYN is dropped, then it wont reached the server and therefore the server won't send a SYN-ACK, therefore the client will timeout and send the SYN again
+
+- Server receives the SYN and then sends the SYN-ACK
+    - If the SYN-ACK is dropped, then the client will timeout and send the SYN again, starting the handshake over again
+
+- If the client receives the SYN-ACK, it sends the ACK and marks the handshake complete
