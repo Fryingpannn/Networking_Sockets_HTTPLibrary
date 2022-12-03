@@ -5,6 +5,8 @@
 - E.g.: `python3 httpc.py get https://httpbin.org/ip`
 - Python 3.x is required.
 
+`python3 httpc.py GET http://localhost:8080 -v`
+
 ### Notes
 - The input and output file paths should be absolute
 - Inline data should not have spaces

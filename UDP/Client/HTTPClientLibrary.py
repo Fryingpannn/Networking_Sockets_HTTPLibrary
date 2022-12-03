@@ -3,6 +3,7 @@ import ipaddress
 from urllib.parse import urlparse
 from packet import Packet
 from packetType import PacketType
+from selectiveRepeat import SRSender
 
 class HTTPClientLibrary:
 
@@ -10,6 +11,8 @@ class HTTPClientLibrary:
         self.curr_seq_num = 0
         self.router_addr = 'localhost'
         self.router_port = 3000
+        self.sender = None
+        self.sender_thread = None
         
     '''
     Description: Send a HTTP request via a TCP socket
@@ -35,8 +38,11 @@ class HTTPClientLibrary:
                 PORT = 80
 
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
-
+                # 3-way handshake
                 self.__handshake(client_socket, HOST, PORT)
+
+                # Selective repeat sender
+                self.sender = SRSender(client_socket, (self.router_addr, self.router_port))
 
                 requestData = self.__prepareRequest(HOST, HTTP_METHOD, PATH, HEADERS, BODY_DATA)    
                 self.__convertToPacketsAndSend(client_socket, requestData, PacketType.DATA, HOST, PORT)
@@ -117,10 +123,17 @@ class HTTPClientLibrary:
             byteData, sender = socket.recvfrom(BUFFER_SIZE)
             packet = Packet.from_bytes(byteData)
 
+            # ACK packet
+            if packet.packet_type == PacketType.ACK.value:
+                self.sender.ACK_received(packet)
+                continue
+
             # Implement Selective Repeat with ACK and buffer
 
             response += packet.payload
-            if len(packet.payload) < PAYLOAD_SIZE: break   # Last packet
+            if len(packet.payload) < PAYLOAD_SIZE: 
+                self.sender_thread.join() # close Selective Repeat thread
+                break   # Last packet
         
         response = response.decode('utf-8')
 
@@ -202,6 +215,7 @@ class HTTPClientLibrary:
     '''
     def __convertToPacketsAndSend(self, connection_socket, requestData, packet_type, server_addr, server_port):
         
+        packets = []
         for chunk in self.__chunkstring(requestData, 1013):
             packet = Packet(packet_type = packet_type.value,
                             seq_num = self.curr_seq_num,
@@ -209,11 +223,11 @@ class HTTPClientLibrary:
                             peer_port = server_port,
                             payload = chunk)
 
-            
-            connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
-            self.curr_seq_num += 1
-
-        # Implement Selective Repeat with ACK and timeouts
+            packets.append(packet)
+            # connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
+            # self.curr_seq_num += 1
+        
+        self.sender_thread = self.sender.store_and_send_packets(packets)
 
     def __chunkstring(self, string, length):
         return (string[0+i:length+i] for i in range(0, len(string), length))
