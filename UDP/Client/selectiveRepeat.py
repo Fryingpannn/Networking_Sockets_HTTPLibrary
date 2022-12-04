@@ -18,6 +18,23 @@ SeqNumber = int
 PacketStore = OrderedDict[SeqNumber, List[Packet | ACKType | SentType | StartTime]]
 
 # Selective Repeat Sender
+'''
+There are three main functions.
+
+1. store_and_send_packets
+- Used by outer class to store packets in SRSender's packet store. This stores a list of packets and gives each of them a
+  sequence number in order. Then calls to start the process_window function on a separate thread.
+
+2. process_window
+- This function iterates over the defined window size of number of packets previously stored and sends them to the server.
+  It loops back on this window to check if the first element of that window has been ACKed, if so, it moves the window
+  forward until the all packets have been ACKed. In this class, we use a dictionary to keep track of which packets have
+  been ACKed, as well as their sent status, and time when sent. Using this, we resend packets that timeout, and avoid
+  resending packets that have been ACked already.
+
+3. ACK_received
+- This function ACKs a specific packet by setting the ACK value in the packet store to 'ACK'. This is called by the HTTP library.
+'''
 class SRSender:
     def __init__(self, socket, destination: Tuple[str,str]=('127.0.0.1','3000'), timeout=3.0, seq_nb=2147483648, window_size=1):
         self.LOCK = Lock()
