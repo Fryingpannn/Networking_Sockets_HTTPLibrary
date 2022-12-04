@@ -112,4 +112,4 @@ class SRSender:
     # Function to ACK packet with seq nb (client and server should have same seq nb for same packet)
     def ACK_received(self, packet: Packet):
         with self.LOCK:
-            self.packets[packet.seq_nb] = [packet, 1, 1, 0]
+            self.packets[packet.seq_num] = [packet, 1, 1, 0]

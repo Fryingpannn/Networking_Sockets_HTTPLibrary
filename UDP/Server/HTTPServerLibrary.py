@@ -6,6 +6,7 @@ from http.client import responses
 from FileHandler import FileHandler
 from packet import Packet
 from packetType import PacketType
+from selectiveRepeatServer import SRReceiver
 
 '''
     PORT:       Integer     > Port to connect to
@@ -22,6 +23,8 @@ class HTTPServerLibrary:
     def startServer(self, PORT, DIRECTORY = "Data", VERBOSE = False):
         if not DIRECTORY: 
             DIRECTORY = "Data"
+
+        if VERBOSE: print("[Verbose mode is on]\n")
        
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
             server_socket.bind(('localhost', PORT))
@@ -32,10 +35,11 @@ class HTTPServerLibrary:
                 
                 packet = Packet.from_bytes(data)
                 sourceAddress = str(packet.peer_ip_addr) + ':' + str(packet.peer_port)
+                total_packets = 1
 
                 # Create a thread for this new connection
                 if sourceAddress not in self.threadMap:
-                    new_thread = UDPRequest(DIRECTORY, server_socket, packet.peer_ip_addr, packet.peer_port, VERBOSE)
+                    new_thread = UDPRequest(DIRECTORY, server_socket, packet.peer_ip_addr, packet.peer_port, total_packets, 1, VERBOSE)
                     self.threadMap[sourceAddress] = new_thread
                     new_thread.start()
 
@@ -44,7 +48,7 @@ class HTTPServerLibrary:
 
 
 class UDPRequest(threading.Thread):
-    def __init__(self, directory, connection_socket, clientIPAddress, clientPort, verbose):
+    def __init__(self, directory, connection_socket, clientIPAddress, clientPort, total_packets, window_size=1, verbose=False):
         threading.Thread.__init__(self)
 
         self.queue = Queue()
@@ -60,10 +64,17 @@ class UDPRequest(threading.Thread):
 
         self.requestPayload = ''
         self.fileHandler.setDefaultDirectory(directory)
+        self.receiver = SRReceiver(self.connection_socket, self.append_packet_payload, self.clientIPAddress,\
+                                     self.clientPort, (self.router_addr, self.router_port), window_size, VERBOSE=verbose)
+        # Total number of packets segmented from original packet. Used to determine if all packets have been received
+        # Ideally, this value should be sent from the client within the first packet.
+        self.total_packets = total_packets
 
     def run(self):
         MAX_PAYLOAD_SIZE = 1013
+        self.receiver.start()
 
+        packet_count = 0
         while True:
             packet = self.queue.get()
             packetType = PacketType(packet.packet_type)
@@ -72,11 +83,18 @@ class UDPRequest(threading.Thread):
                 self.__handleHandshake()
 
             elif packetType == PacketType.DATA:
-                self.requestPayload += packet.payload.decode("utf-8")
+                packet_count += 1
+                # Selective repeat
+                self.receiver.process_packet(packet)
 
-                # last packet
-                if len(self.requestPayload) < MAX_PAYLOAD_SIZE:
-                    break
+                # Stay if current packet not processed/ACK'd yet
+                while True: 
+                    if self.receiver.get_packet_count() >= packet_count: break 
+
+                # All packets received, break
+                if self.has_no_more_packets(): break
+                # Last packet
+                #if len(self.requestPayload) < MAX_PAYLOAD_SIZE: break
 
 
         '''If requestBody does not exists'''
@@ -88,8 +106,12 @@ class UDPRequest(threading.Thread):
         
 
         self.__handleRequest(responseHeader, responseBody)
-
-
+    
+    def append_packet_payload(self, packet):
+        self.requestPayload += packet.payload.decode("utf-8")
+    
+    def has_no_more_packets(self):
+        return self.receiver.get_packet_count() == self.total_packets
 
     def __handleHandshake(self):
             # SYN
