@@ -34,7 +34,7 @@ Function 2: process_window
         - Pop top of buffer heap and send it to upper layer to process payload
         - Increase window
 
-IGNORE THIS Note FOR NOW
+IGNORE THIS FOR NOW
 Note: normally, I think the total number of packets an original packet has been separated into must also be sent from the client. Otherwise,
       it isn't possible to know when to stop and reconstruct the entire packet before processing it. Thus, this total packet value we currently
       use is 1. If a packet is split into 3 packets, the total packet value will be 3.
