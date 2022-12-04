@@ -92,9 +92,10 @@ class UDPRequest(threading.Thread):
                     if self.receiver.get_packet_count() >= packet_count: break 
 
                 # All packets received, break
-                if self.has_no_more_packets(): break
+                #if self.has_no_more_packets(): break
+                
                 # Last packet
-                #if len(self.requestPayload) < MAX_PAYLOAD_SIZE: break
+                if len(packet.payload) < MAX_PAYLOAD_SIZE: break
 
 
         '''If requestBody does not exists'''
