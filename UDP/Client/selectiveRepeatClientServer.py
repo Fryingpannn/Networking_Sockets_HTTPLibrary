@@ -12,6 +12,7 @@ from typing import List, Tuple, OrderedDict
 from packetType import PacketType
 import socket
 import ipaddress
+import random
 
 # Types
 SeqNumber = int
@@ -81,7 +82,7 @@ class SRReceiver:
         # Store packet in buffer heap and mark as received
         with self.LOCK:
             self.packets[packet.seq_num] = packet
-            heapq.heappush(self.buffer, (packet.seq_num, packet))
+            heapq.heappush(self.buffer, (packet.seq_num, random.randint(1,99999999), packet))
             # ACK
             ack_packet = Packet(packet_type = PacketType.ACK.value,
                             seq_num = packet.seq_num,
