@@ -16,6 +16,7 @@ class HTTPClientLibrary:
         self.sender_thread = None
         self.receiver = None
         self.response = ''
+        self.socket = None
         
     '''
     Description: Send a HTTP request via a TCP socket
@@ -43,6 +44,7 @@ class HTTPClientLibrary:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
                 # 3-way handshake
                 self.__handshake(client_socket, HOST, PORT)
+                self.socket = client_socket
 
                 # Selective repeat sender and receiver
                 self.sender = SRSender(client_socket, (self.router_addr, self.router_port))
@@ -81,6 +83,8 @@ class HTTPClientLibrary:
                     
                     else:
                         print(responseBody)
+                
+                self.__keep_ACKing()
 
     '''
         Internal Method
@@ -112,6 +116,18 @@ class HTTPClientLibrary:
 
     def append_packet_payload(self, packet):
         self.response += packet.payload.decode("utf-8")
+    
+    def __keep_ACKing(self):
+        BUFFER_SIZE = 1024
+
+        '''Reads data in packets of length BUFFER_SIZE from the kernel buffer'''
+        while True:
+            byteData, sender = self.socket.recvfrom(BUFFER_SIZE)
+            packet = Packet.from_bytes(byteData)
+
+            # Selective repeat: if packet type is DATA, send ACK
+            if packet.packet_type == PacketType.DATA.value:
+                self.receiver.process_packet(packet)
 
     '''
         Internal Method 
