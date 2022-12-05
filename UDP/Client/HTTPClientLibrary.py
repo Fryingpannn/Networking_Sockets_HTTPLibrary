@@ -149,7 +149,7 @@ class HTTPClientLibrary:
             if len(packet.payload) < PAYLOAD_SIZE:
                 self.sender.stop()
                 # self.receiver.stop()
-                self.sender_thread.join()
+                #self.sender_thread.join()
                 # receiver_thread.join()
                 break   # Last packet
         
