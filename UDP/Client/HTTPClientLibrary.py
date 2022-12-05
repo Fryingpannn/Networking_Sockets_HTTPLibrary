@@ -149,6 +149,9 @@ class HTTPClientLibrary:
             byteData, sender = socket.recvfrom(BUFFER_SIZE)
             packet = Packet.from_bytes(byteData)
 
+            if packet.packet_type == PacketType.SYN_ACK.value:
+                continue
+
             # ACK packet
             if packet.packet_type == PacketType.ACK.value:
                 self.sender.ACK_received(packet)
@@ -163,9 +166,9 @@ class HTTPClientLibrary:
                 while True: 
                     if self.receiver.get_packet_count() >= packet_count: break 
 
-                if len(packet.payload) < PAYLOAD_SIZE:
-                    self.sender.stop()
-                    break   # Last packet
+            if len(packet.payload) < PAYLOAD_SIZE:
+                self.sender.stop()
+                break   # Last packet
         
         #self.response = self.response.decode('utf-8')
 
