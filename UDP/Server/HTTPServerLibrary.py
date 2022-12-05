@@ -1,7 +1,7 @@
 import socket
 import threading
 import ipaddress
-from queue import Queue
+from queue import Queue, Empty
 from http.client import responses
 from FileHandler import FileHandler
 from packet import Packet
@@ -216,7 +216,7 @@ class UDPRequest(threading.Thread):
     def __convertToPacketsAndSend(self, requestData, packet_type):
         
         for chunk in self.__chunkstring(requestData, 1013):
-            packet = Packet(packet_type = packet_type.value,
+            packet = Packet(packet_type = PacketType.DATA.value,
                             seq_num = self.curr_seq_num,
                             peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(self.clientIPAddress)),
                             peer_port = self.clientPort,
@@ -225,7 +225,15 @@ class UDPRequest(threading.Thread):
             self.connection_socket.sendto(packet.to_bytes(), (self.router_addr, self.router_port))
             self.curr_seq_num += 1
 
-        # Implement Selective Repeat with ACK and timeouts
+        # Implement Selective Repeat with ACK and timeouts from server side
+        try:
+            ACKpacket = self.queue.get(True, 3)
+            if self.verbose: print("ACK received: ", ACKpacket)
+            self.curr_seq_num -= 1 
+            # Make the client send an ACK
+        except Empty:
+            if self.verbose: print("ACK not received: Timeout occured.")
+            self.__convertToPacketsAndSend(requestData, packet_type)
 
 
     def __chunkstring(self, string, length):

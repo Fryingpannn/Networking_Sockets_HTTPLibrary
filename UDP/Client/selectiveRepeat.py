@@ -57,6 +57,7 @@ class SRSender:
         self.destination: Tuple[str,str] = destination
         self.timeout = timeout
         self.socket = socket
+        self.loop = True
     
     # This function should be called after the socket has been opened
     def __start(self):
@@ -85,7 +86,7 @@ class SRSender:
     def __process_window(self):
         # Q: When to stop? Maybe constructor needs to input total number of packets that will be sent
         #    since current max sequence nb is so large. When all done, return all the packets in the dictionary.
-        while True:
+        while self.loop:
             # If no packets yet
             if self.next_seq_nb == 0:
                 time.sleep(1)
@@ -130,3 +131,6 @@ class SRSender:
     def ACK_received(self, packet: Packet):
         with self.LOCK:
             self.packets[packet.seq_num] = [packet, 1, 1, 0]
+
+    def stop(self):
+        self.loop = False
