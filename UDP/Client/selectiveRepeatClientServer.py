@@ -116,7 +116,7 @@ class SRReceiver:
 
             # Pop packet from buffer heap
             with self.LOCK:
-                _, packet = heapq.heappop(self.buffer)
+                _,_, packet = heapq.heappop(self.buffer)
                 # Send packet payload to upper layer
                 self.append_packet_payload(packet)
                 self.packet_count += 1
