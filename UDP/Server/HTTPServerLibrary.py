@@ -79,6 +79,9 @@ class UDPRequest(threading.Thread):
             packet = self.queue.get()
             packetType = PacketType(packet.packet_type)
 
+            if packetType == PacketType.ACK:
+                continue
+
             if packetType == PacketType.SYN:
                 self.__handleHandshake()
 
@@ -229,10 +232,10 @@ class UDPRequest(threading.Thread):
         try:
             ACKpacket = self.queue.get(True, 3)
             if self.verbose: print("ACK received: ", ACKpacket)
-            self.curr_seq_num -= 1 
             # Make the client send an ACK
         except Empty:
             if self.verbose: print("ACK not received: Timeout occured.")
+            self.curr_seq_num -= 1 
             self.__convertToPacketsAndSend(requestData, packet_type)
 
 

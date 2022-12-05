@@ -75,8 +75,8 @@ class SRReceiver:
         # Check if packet is in window and have not been received already (duplicate)
         #if packet.seq_num < self.l or packet.seq_num >= self.r or packet.seq_num in self.packets:
             #return
-        if packet.seq_num in self.packets:
-            return
+        #if packet.seq_num in self.packets:
+            #return
 
         # Store packet in buffer heap and mark as received
         with self.LOCK:
