@@ -56,6 +56,8 @@ class HTTPClientLibrary:
    
                 # Receive response
                 responseHeader, responseBody = self.__receiveResponse(client_socket)
+                print("Response Received\n")
+                print(responseHeader, responseBody)
 
                 '''Check if the response is 302: redirect'''
                 if (self.__responseHeaderContainsRedirection(responseHeader)):
@@ -157,17 +159,13 @@ class HTTPClientLibrary:
             if packet.packet_type == PacketType.DATA.value:
                 self.receiver.process_packet(packet)
                 packet_count += 1
-                #print('Starting loop')           
+      
                 while True: 
                     if self.receiver.get_packet_count() >= packet_count: break 
-            #print('Finished loop')
-            #self.response += packet.payload
-            if len(packet.payload) < PAYLOAD_SIZE:
-                self.sender.stop()
-                # self.receiver.stop()
-                #self.sender_thread.join()
-                # receiver_thread.join()
-                break   # Last packet
+
+                if len(packet.payload) < PAYLOAD_SIZE:
+                    self.sender.stop()
+                    break   # Last packet
         
         #self.response = self.response.decode('utf-8')
 
@@ -198,7 +196,7 @@ class HTTPClientLibrary:
 
 
     def __handshake(self, connection_socket, server_addr, server_port):
-        HANDSHAKE_CONNECTION_TIMEOUT = 2.0  # In seconds
+        HANDSHAKE_CONNECTION_TIMEOUT = 1  # 1 sec
 
         print("Initiating handshake....")
 

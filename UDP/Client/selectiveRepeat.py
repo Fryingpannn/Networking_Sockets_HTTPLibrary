@@ -36,7 +36,7 @@ There are three main functions.
 - This function ACKs a specific packet by setting the ACK value in the packet store to 'ACK'. This is called by the HTTP library.
 '''
 class SRSender:
-    def __init__(self, socket, destination: Tuple[str,str]=('127.0.0.1','3000'), timeout=3.0, seq_nb=2147483648, window_size=1):
+    def __init__(self, socket, destination: Tuple[str,str]=('127.0.0.1','3000'), timeout=1.0, seq_nb=2147483648, window_size=1):
         self.LOCK = Lock()
         # max should be 2^(m-1), m being # of bits in header for seq nb
         self.MAX_SEQ_NB = seq_nb

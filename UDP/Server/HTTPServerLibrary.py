@@ -123,7 +123,7 @@ class UDPRequest(threading.Thread):
             
             # SYN-ACK
             print("Sending SYN-ACK...")
-            packet = Packet(packet_type = PacketType.SYN.value,
+            packet = Packet(packet_type = PacketType.SYN_ACK.value,
                             seq_num = 0,
                             peer_ip_addr = ipaddress.ip_address(socket.gethostbyname(self.clientIPAddress)),
                             peer_port = self.clientPort,
@@ -230,7 +230,8 @@ class UDPRequest(threading.Thread):
 
         # Implement Selective Repeat with ACK and timeouts from server side
         try:
-            ACKpacket = self.queue.get(True, 3)
+            ACK_PACKET_TIMEOUT = 1 # 1 sec
+            ACKpacket = self.queue.get(True, ACK_PACKET_TIMEOUT)
             if self.verbose: print("ACK received: ", ACKpacket)
             # Make the client send an ACK
         except Empty:
