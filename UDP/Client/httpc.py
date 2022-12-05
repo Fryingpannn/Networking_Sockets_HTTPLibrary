@@ -143,14 +143,14 @@ def main():
     print("\n=====[Smit & Pan's HTTP program]=====\n")
 
     # Create parser class
-    #httpc = HTTPC()
+    httpc = HTTPC()
     # Store user CLI inputs
-    #httpc.store_inputs()
+    httpc.store_inputs()
     # Use our HTTP library to send request
     request = HTTPClientLibrary()
-    #request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
-    #                        httpc.get_data(),httpc.get_verbose(),httpc.get_output_path())
-    request.sendHTTPRequest('localhost:8080','GET', VERBOSE=True)
+    request.sendHTTPRequest(httpc.get_hostname(),httpc.get_method(),httpc.get_url_path(),httpc.get_headers(),
+                            httpc.get_data(),httpc.get_verbose(),httpc.get_output_path())
+    #request.sendHTTPRequest('localhost:8080','GET', VERBOSE=True)
 
     print('\n===========[END]===========\n')
 
